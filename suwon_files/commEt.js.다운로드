@@ -1,0 +1,2024 @@
+   /*학생부속 공통 자바스크립트*/
+   /*전역변수는 commGm의 전역변수를 사용한다*/
+
+   /*============================================================================
+   ** 기능  : 학생조회 학생조회 팝업
+   ** 인수  : 학번/성명, 학번 오브젝트
+   ** 리턴  : 
+       "responseEtSearchStudentInfo/sno"     학번            
+       "responseEtSearchStudentInfo/snoNm"   학생성명     
+   ** 파라미터 : etStudentSearch(textObj, nameObj, 학적상태, 정원내외구분)
+   ============================================================================*/
+   function etStudentSearch(e, textObj, nameObj) {
+   	gmSearchTypeFlag = "form";
+   	gmTextObjID = textObj.getID();
+   	gmNameObjID = nameObj.getID();
+   	
+   	nameObj.setValue("");
+   	var value = textObj.getValue();
+   	textObj.setValue("");
+   	
+   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudentInfo" );
+   	
+   	if(e.type != 'click') {
+   		if(value.length < 1) {
+   			return;
+   		} else if(value.length < 2) {
+   			showMsg("C_I054", "학생검색 학번/성명을 2자 이상");
+   			return;
+   		}
+   	} 
+   	
+   	getEtStudentInfo(e.type, value, arguments[3], arguments[4], arguments[5], arguments[6]);
+   }
+   
+    /*
+	 * ============================================================================ *
+	 * 기능 : 학생조회(대학원생 통합) 병무 학생조회 팝업 * 인수 : 학번/성명, 학번 오브젝트 * 리턴 :
+	 * "responseEtSearchStudentInfo/sno" 학번 "responseEtSearchStudentInfo/snoNm"
+	 * 학생성명 * 파라미터 : etStudentSearch(textObj, nameObj, 학적상태, 정원내외구분)
+	 * ============================================================================
+	 */
+    function etBmStudentSearch(e, textObj, nameObj) {
+    	gmSearchTypeFlag = "form";
+    	gmTextObjID = textObj.getID();
+    	gmNameObjID = nameObj.getID();
+    	
+    	nameObj.setValue("");
+    	var value = textObj.getValue();
+    	textObj.setValue("");
+    	
+    	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudentInfo" );
+    	
+    	if(e.type != 'click') {
+    		if(value.length < 1) {
+    			return;
+    		} else if(value.length < 2) {
+    			showMsg("C_I054", "학생검색 학번/성명을 2자 이상");
+    			return;
+    		}
+    	} 
+    	
+    	getEtBmStudentInfo(e.type, value, arguments[3], arguments[4], arguments[5]);
+    }
+    
+    function etBmStudentGridSearch(grid , row , col, initCols) {
+    	gmSearchTypeFlag = "grid";
+    	gmSearchGridRow = row;
+    	gmSearchGridCol = col;
+    	gmSearchGridObjID = grid.getID();
+
+    	grid.setCellData( row , col+2 , "" );
+    	var value = grid.getCellData(row, col);
+    	grid.setCellData( row , col , "" );
+    	
+    	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudentInfo" );
+    	
+    	if(initCols != undefined) {
+    		for(var index in initCols) {
+    			if(initCols[index] != "") {
+    				grid.setCellData( row , initCols[index] , "" );	
+    			}
+    		}
+    	}
+
+    	if(event.type != "click"){
+    		if(value.length < 1) {
+    			return;
+    		} else if(value.length < 2) {
+    			showMsg("C_I054", "학생검색 학번/성명을 2자 이상");
+    			return;
+    		}
+    	} 
+    	
+    	getEtBmStudentInfo(event.type, value, arguments[3], arguments[4], arguments[5]);
+    }
+
+   /* 학생부속 공통 자바스크립트 */
+   /* 전역변수는 commGm의 전역변수를 사용한다 */
+
+   /*
+	 * ============================================================================ *
+	 * 기능 : 사생조회 사생조회 팝업 * 인수 : 학번/성명, 학번 오브젝트 * 리턴 :
+	 * "responseEtSearchStudentInfo/stdmNo" 학번
+	 * "responseEtSearchStudentInfo/stdmNm" 학생성명 * 파라미터 :
+	 * etStudentSearch(textObj, nameObj, 학적상태, 정원내외구분)
+	 * ============================================================================
+	 */
+   function etStdmSearch(e, textObj, nameObj) {
+   	gmSearchTypeFlag = "form";
+   	gmTextObjID = textObj.getID();
+   	gmNameObjID = nameObj.getID();
+   	
+   	nameObj.setValue("");
+   	var value = textObj.getValue();
+   	textObj.setValue("");
+   	
+   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchstdmInfo" );
+   	
+   	if(e.type != 'click') {
+   		if(value.length < 1) {
+   			return;
+   		} else if(value.length < 2) {
+   			showMsg("C_I054", "학생검색 학번/성명을 2자 이상");
+   			return;
+   		}
+   	} 
+   	
+   	getEtStdmInfo(e.type, value, arguments[3], arguments[4], '', arguments[5]);
+   }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 피진료자조회 * 인수 : 피진료자번호/성명, 피진료자번호 오브젝트 * 리턴 : 피진료자번호 피진료자성명 * 파라미터 :
+	 * etBgSearch(textObj, nameObj)
+	 * ============================================================================
+	 */
+    function etBgSearch(e, textObj, nameObj) {
+    	gmSearchTypeFlag = "form";
+    	gmTextObjID = textObj.getID();
+    	gmNameObjID = nameObj.getID();
+    	
+    	nameObj.setValue("");
+    	var value = textObj.getValue();
+    	textObj.setValue("");
+    	
+    	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchBgInfo" );
+    	
+    	if(e.type != 'click') {
+    		if(value.length < 1) {
+    			return;
+    		} else if(value.length < 2) {
+    			showMsg("C_I054", "피진료자검색 피진료자번호/성명을 2자 이상");
+    			return;
+    		}
+    	}
+    	
+    	getEtBgInfo(e.type, value);
+    }
+    
+    /*
+	 * ============================================================================ *
+	 * 기능 : 피진료자조회 조회 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+     function getEtBgInfo(type,value) {
+     	var encodeValue = "";
+     	
+     	
+     	if(value != "") {
+     		encodeValue = WebSquare.text.BASE64URLEncoder(value);
+     	} 
+     	
+     	if(type == "click") {
+    		if(typeof setNavigator != 'function') {
+	  			openNewPopup( "setEtBgPopupValue", "/views/et/bg/ET_BG_0001.xml", {width: 900, height:540}, {pVistrNo:encodeValue});
+	  			return;
+    		}
+     		openPopup( "setEtBgPopupValue", "/views/et/bg/ET_BG_0001.xml", {width: 900, height:540}, {pVistrNo:encodeValue});
+     		return;
+     	}
+         setValue("requestEtSearchBg/vistrNo", value);
+         
+         execSubmission("getCommonDataSubm", "requestEtSearchBg", "responseEtSearchBg", "/bg/listBgSearch.do");
+         
+         var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseEtSearchBg/object/bgList/object");
+         
+         var rowCount = dataArr.length;
+         
+         if(rowCount == 1) {
+        	 setEtBgPopupValue(WebSquare.ModelUtil.findInstanceNode( "responseEtSearchBg/object/bgList/object" ));
+         } else if(rowCount > 1) {
+  	   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchBg" );
+  	   	if(typeof setNavigator != 'function') {
+  	   	openNewPopup( "setEtBgPopupValue", "/views/et/bg/ET_BG_0001.xml", {width: 900, height:540}, {pVistrNo:encodeValue});
+  			return;
+  		}
+  	   openPopup( "setEtBgPopupValue", "/views/et/bg/ET_BG_0001.xml", {width: 900, height:540}, {pVistrNo:encodeValue});
+         } else if(rowCount == 0) {
+         	showMsg("C_I041", "피진료자조회 피진료자번호/피진료자명으로 검색한 결과");
+         }
+     }
+    
+     
+     /*
+		 * ============================================================================ *
+		 * 기능 : 피진료자조회 팝업 후에 호출됨 * 인수 : arrResult * 리턴 :
+		 * ============================================================================
+		 */
+      function setEtBgPopupValue(resultNodes) {
+      	   if(resultNodes == undefined) {
+      	   	return;
+      	   }
+      	   
+      	   WebSquare.ModelUtil.setInstanceNode( resultNodes, "responseEtSearchBg", null , "replace" );
+      	   WebSquare.ModelUtil.copyChildrenNodes( "responseEtSearchBg/object" , "responseEtSearchBg", "replaceAll");
+
+      	   if(gmSearchTypeFlag == "form") {
+          	eval(gmTextObjID).setValue( getValue("responseEtSearchBg/vistrNo") );
+          	eval(gmNameObjID).setValue( getValue("responseEtSearchBg/vistrNm") );
+          	
+             	// 화면에서 부가정보를 사용할 경우에 etBgSearchFormCallBack 함수를 만들어 놓고 사용한다
+             	if (typeof etBgSearchFormCallBack == 'function') {
+             		etBgSearchFormCallBack();
+             	}
+             	
+             	return;
+          }
+    
+      }
+    
+    
+    
+   /*
+	 * ============================================================================ *
+	 * 기능 : 사생조회 조회 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+    function getEtStdmInfo(type,value) {
+    	var encodeValue = "";
+    	var encodeScrgStatCd = "";
+    	var encodeFxinoDvCd = "";
+    	
+    	if(arguments[2] != undefined) {
+    		setValue("requestEtSearchStdm/resdYear", arguments[2]);
+    		encodeResdYear = WebSquare.text.BASE64URLEncoder(arguments[2]);
+    	}
+    	
+    	if(arguments[3] != undefined) {
+    		setValue("requestEtSearchStdm/resdSmrCd", arguments[3]);
+    		encodeResdSmrCd = WebSquare.text.BASE64URLEncoder(arguments[3]);
+    	}
+    	
+    	if(value != "") {
+    		encodeValue = WebSquare.text.BASE64URLEncoder(value);
+    	} 
+    	
+    	if(type == "click") {
+   		if(typeof setNavigator != 'function') {
+ 			openNewPopup( "setEtStdmPopupValue", "/views/et/ks/ET_KS_0001.xml", {width: 900, height:540}, {pStdmNo:encodeValue, pResdYear:encodeResdYear, pResdSmrCd:encodeResdSmrCd});
+ 			return;
+ 		}
+    		openPopup( "setEtStdmPopupValue", "/views/et/ks/ET_KS_0001.xml", {width: 900, height:540}, {pStdmNo:encodeValue, pResdYear:encodeResdYear, pResdSmrCd:encodeResdSmrCd});
+    		return;
+    	}
+        setValue("requestEtSearchStdm/stdmNo", value);
+        
+        execSubmission("getCommonDataSubm", "requestEtSearchStdm", "responseEtSearchStdm", "/ks/listStdmSearch.do");
+        
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseEtSearchStdm/object/stdmList/object");
+        
+        var rowCount = dataArr.length;
+        
+        if(rowCount == 1) {
+            setEtStdmPopupValue(WebSquare.ModelUtil.findInstanceNode( "responseEtSearchStdm/object/stdmList/object" ));
+        } else if(rowCount > 1) {
+ 	   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStdm" );
+ 	   	if(typeof setNavigator != 'function') {
+ 	   	openNewPopup( "setEtStdmPopupValue", "/views/et/ks/ET_KS_0001.xml", {width: 900, height:540}, {pStdmNo:encodeValue, pResdYear:encodeResdYear, pResdSmrCd:encodeResdSmrCd});
+ 			return;
+ 		}
+ 	   openPopup( "setEtStdmPopupValue", "/views/et/ks/ET_KS_0001.xml", {width: 900, height:540}, {pStdmNo:encodeValue, pResdYear:encodeResdYear, pResdSmrCd:encodeResdSmrCd});
+        } else if(rowCount == 0) {
+        	showMsg("C_I041", "사생조회 사생번호/사생명으로 검색한 결과");
+        }
+    }
+   
+    
+    /*
+	 * ============================================================================ *
+	 * 기능 : 사생조회 팝업 후에 호출됨 * 인수 : arrResult * 리턴 :
+	 * ============================================================================
+	 */
+     function setEtStdmPopupValue(resultNodes) {
+     	   if(resultNodes == undefined) {
+     	   	return;
+     	   }
+     	   
+     	   WebSquare.ModelUtil.setInstanceNode( resultNodes, "responseEtSearchStdm", null , "replace" );
+     	   WebSquare.ModelUtil.copyChildrenNodes( "responseEtSearchStdm/object" , "responseEtSearchStdm", "replaceAll");
+
+     	   if(gmSearchTypeFlag == "form") {
+         	eval(gmTextObjID).setValue( getValue("responseEtSearchStdm/snoImstNo") );
+         	eval(gmNameObjID).setValue( getValue("responseEtSearchStdm/stdmNm") );
+         	
+            	// 화면에서 부가정보를 사용할 경우에 gmDeptSearchFormCallBack 함수를 만들어 놓고 사용한다
+            	if (typeof etStudentSearchFormCallBack == 'function') {
+            		 etStdmSearchFormCallBack();
+            	}
+            	
+            	return;
+         }
+   
+        // eval(gmSearchGridObjID).setCellData( gmSearchGridRow ,
+		// gmSearchGridCol , getValue("responseEtSearchStdm/snoImstNo") );
+		// //사생번호
+        // eval(gmSearchGridObjID).setCellData( gmSearchGridRow ,
+		// gmSearchGridCol+2 , getValue("responseEtSearchStdm/stdmNm") ); //성명
+         
+        // if (typeof etStudentSearchGridCallBack == 'function') {
+    	// etStdmSearchGridCallBack(gmSearchGridRow, gmSearchGridCol);
+        // }
+     }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 학생조회 팝업 && 그리드에 입력 * 인수 : etStudentSearchGrid(grid , row , col,
+	 * initCols, 학적상태, 정원내외구분) * 리턴 : 결과배열, 노드생성
+	 * ============================================================================
+	 */
+   function etStudentSearchGrid(eType, grid , row , col, initCols) {
+   	gmSearchTypeFlag = "grid";
+   	gmSearchGridRow = row;
+   	gmSearchGridCol = col;
+   	gmSearchGridObjID = grid.getID();
+
+   	grid.setCellData( row , col+2 , "" );
+   	var value = grid.getCellData(row, col);
+   	grid.setCellData( row , col , "" );
+   	
+   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudentInfo" );
+   	
+   	if(initCols != undefined) {
+   		for(var index in initCols) {
+   			if(initCols[index] != "") {
+   				grid.setCellData( row , initCols[index] , "" );	
+   			}
+   		}
+   	}
+
+   	if(eType != "click"){
+   		if(value.length < 1) {
+   			return;
+   		} else if(value.length < 2) {
+   			showMsg("C_I054", "학생검색 학번/성명을 2자 이상");
+   			return;
+   		}
+   	} 
+
+   	getEtStudentInfo(eType, value, arguments[5], arguments[6], '', arguments[7]);
+   }
+
+
+   /*
+	 * ============================================================================ *
+	 * 기능 : 학생조회 조회 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+   function getEtStudentInfo(type,value) {
+   	var encodeValue = "";
+   	var encodeScrgStatCd = "";
+   	var encodeFxinoDvCd = "";
+   	var bmGb ="";
+   	var deptCd = "";
+   	
+   	if(gmSearchTypeFlag == ""){
+   		gmSearchTypeFlag = type;
+   	}
+   	if(arguments[2] != undefined) {
+   		setValue("requestEtSearchStudent/scrgStatCd", arguments[2]);
+   		encodeScrgStatCd = WebSquare.text.BASE64URLEncoder(arguments[2]);
+   	}
+   	
+   	if(arguments[3] != undefined) {
+   		setValue("requestEtSearchStudent/fxinoDvcd", arguments[3]);
+   		encodeFxinoDvCd = WebSquare.text.BASE64URLEncoder(arguments[3]);
+   	}
+   	
+   	if(arguments[4] != undefined) {
+   		setValue("requestEtSearchStudent/bmGb", arguments[4]);
+   		bmGb = WebSquare.text.BASE64URLEncoder(arguments[4]);
+   	}
+   	
+   	if(arguments[5] != undefined) {
+   		setValue("requestEtSearchStudent/deptCd", arguments[5]);
+   		deptCd = WebSquare.text.BASE64URLEncoder(arguments[5]);
+   	}
+   	
+   	if(value != "") {
+   		encodeValue = WebSquare.text.BASE64URLEncoder(value);
+   	} 
+   	
+   	if(type == "click") {
+  		if(typeof setNavigator != 'function') {
+			openNewPopup( "setEtStudentPopupValue", "/views/st/hs/ST_HS_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb, pDeptCd:deptCd});
+			return;
+		}
+   		openPopup( "setEtStudentPopupValue", "/views/st/hs/ST_HS_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb, pDeptCd:deptCd});
+   		return;
+   	}
+       setValue("requestEtSearchStudent/sno", value);
+       
+       execSubmission("getCommonDataSubm", "requestEtSearchStudent", "responseEtSearchStudent", "/et/listStudentSearch.do");
+       
+       var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseEtSearchStudent/object/studentList/object");
+       
+       var rowCount = dataArr.length;
+       if(rowCount == 1) {
+           setEtStudentPopupValue(WebSquare.ModelUtil.findInstanceNode( "responseEtSearchStudent/object/studentList/object" ));
+       } else if(rowCount > 1) {
+	   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudent" );
+	   	if(typeof setNavigator != 'function') {
+			openNewPopup( "setEtStudentPopupValue", "/views/st/hs/ST_HS_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb});
+			return;
+		}
+	   	openPopup( "setEtStudentPopupValue", "/views/st/hs/ST_HS_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb});
+       } else if(rowCount == 0) {
+       	showMsg("C_I041", "학생조회 학번/학생명으로 검색한 결과");
+       }
+   }
+
+   /*
+	 * ============================================================================ *
+	 * 기능 : 학생조회(대학원생 통합) 조회 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+    function getEtBmStudentInfo(type,value) {
+    	var encodeValue = "";
+    	var encodeScrgStatCd = "";
+    	var encodeFxinoDvCd = "";
+    	var bmGb ="";
+    	var deptCd = "";
+    	
+    	if(arguments[2] != undefined) {
+    		setValue("requestEtSearchStudent/scrgStatCd", arguments[2]);
+    		encodeScrgStatCd = WebSquare.text.BASE64URLEncoder(arguments[2]);
+    	}
+    	
+    	if(arguments[3] != undefined) {
+    		setValue("requestEtSearchStudent/fxinoDvcd", arguments[3]);
+    		encodeFxinoDvCd = WebSquare.text.BASE64URLEncoder(arguments[3]);
+    	}
+    	
+    	if(arguments[4] != undefined) {
+    		setValue("requestEtSearchStudent/bmGb", arguments[4]);
+    		bmGb = WebSquare.text.BASE64URLEncoder(arguments[4]);
+    	}
+    	
+    	if(arguments[5] != undefined) {
+    		setValue("requestEtSearchStudent/deptCd", arguments[5]);
+    		deptCd = WebSquare.text.BASE64URLEncoder(arguments[5]);
+    	}
+    	
+    	if(value != "") {
+    		encodeValue = WebSquare.text.BASE64URLEncoder(value);
+    	} 
+    	
+    	if(type == "click") {
+   		if(typeof setNavigator != 'function') {
+ 			openNewPopup( "setEtBmStudentPopupValue", "/views/st/bm/ST_BM_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb, pDeptCd:deptCd});
+ 			return;
+ 		}
+    		openPopup( "setEtBmStudentPopupValue", "/views/st/bm/ST_BM_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb, pDeptCd:deptCd});
+    		return;
+    	}
+        setValue("requestEtSearchStudent/sno", value);
+        
+        execSubmission("getCommonDataSubm", "requestEtSearchStudent", "responseEtSearchStudent", "/et/listBmStudentSearch.do");
+        
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseEtSearchStudent/object/studentList/object");
+        
+        var rowCount = dataArr.length;
+        if(rowCount == 1) {
+        	setEtBmStudentPopupValue(WebSquare.ModelUtil.findInstanceNode( "responseEtSearchStudent/object/studentList/object" ));
+        } else if(rowCount > 1) {
+ 	   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudent" );
+ 	   	if(typeof setNavigator != 'function') {
+ 			openNewPopup( "setEtBmStudentPopupValue", "/views/st/bm/ST_BM_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb});
+ 			return;
+ 		}
+ 	   	openPopup( "setEtBmStudentPopupValue", "/views/st/bm/ST_BM_0001.xml", {width: 900, height:540}, {pSno:encodeValue, pScrgStatCd:encodeScrgStatCd, pFxinoDvcd:encodeFxinoDvCd, pBmGb:bmGb});
+        } else if(rowCount == 0) {
+        	showMsg("C_I041", "학생조회 학번/학생명으로 검색한 결과");
+        }
+    }
+   /*
+	 * ============================================================================ *
+	 * 기능 : 학생조회 팝업 후에 호출됨 * 인수 : arrResult * 리턴 :
+	 * ============================================================================
+	 */
+   function setEtStudentPopupValue(resultNodes) {
+   	   if(resultNodes == undefined) {
+   	   	return;
+   	   }
+            
+   	   WebSquare.ModelUtil.setInstanceNode( resultNodes, "responseEtSearchStudent", null , "replace" );
+   	   WebSquare.ModelUtil.copyChildrenNodes( "responseEtSearchStudent/object" , "responseEtSearchStudent", "replaceAll");
+   	   
+   	   if(gmSearchTypeFlag == "form") {
+   		   if(gmTextObjID != ""){
+   			   eval(gmTextObjID).setValue( getValue("responseEtSearchStudent/sno") );
+   			   eval(gmNameObjID).setValue( getValue("responseEtSearchStudent/studNm") );
+   		   }
+          	// 화면에서 부가정보를 사용할 경우에 gmDeptSearchFormCallBack 함수를 만들어 놓고 사용한다
+          	if (typeof etStudentSearchFormCallBack == 'function') {
+          		 etStudentSearchFormCallBack();
+          	}
+          	
+          	return;
+       }
+   
+       eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol , getValue("responseEtSearchStudent/sno") ); // 학번
+       eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol+2 , getValue("responseEtSearchStudent/studNm") ); // 성명
+      
+       if (typeof etStudentSearchGridCallBack == 'function') {
+  	     etStudentSearchGridCallBack(gmSearchGridRow, gmSearchGridCol);
+       }
+   }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 학생조회(대학원생통합) 팝업 후에 호출됨 * 인수 : arrResult * 리턴 :
+	 * ============================================================================
+	 */
+    function setEtBmStudentPopupValue(resultNodes) {
+    	   if(resultNodes == undefined) {
+    	   	return;
+    	   }
+    	   WebSquare.ModelUtil.setInstanceNode( resultNodes, "responseEtSearchStudent", null , "replace" );
+    	   WebSquare.ModelUtil.copyChildrenNodes( "responseEtSearchStudent/object" , "responseEtSearchStudent", "replaceAll");
+    	   
+    	      var arrResult = new Array();
+    	      arrResult.push( getValue("responseEtSearchStudent/sno"));        
+    	      arrResult.push( getValue("responseEtSearchStudent/studNm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/studNmEnm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/dpmjNm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/mjorNm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/studGrde"));
+    	      arrResult.push( getValue("responseEtSearchStudent/studIidno"));
+    	      arrResult.push( getValue("responseEtSearchStudent/sexDvnm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/sexDvcd"));
+    	      arrResult.push( getValue("responseEtSearchStudent/studCchPrfsEno"));
+    	
+    	   if(gmSearchTypeFlag == "form") {
+        	eval(gmTextObjID).setValue( getValue("responseEtSearchStudent/sno") );
+        	eval(gmNameObjID).setValue( getValue("responseEtSearchStudent/studNm") );
+        	
+           	// 화면에서 부가정보를 사용할 경우에 gmDeptSearchFormCallBack 함수를 만들어 놓고 사용한다
+           	if (typeof etStudentSearchFormCallBack == 'function') {
+           		 etStudentSearchFormCallBack(arrResult);
+           	}
+           	
+           	return;
+        }
+  
+        eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol , getValue("responseEtSearchStudent/sno") ); // 학번
+        eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol+2 , getValue("responseEtSearchStudent/studNm") ); // 성명
+        
+        if (typeof etStudentSearchGridCallBack == 'function') {
+   	     etStudentSearchGridCallBack(gmSearchGridRow, gmSearchGridCol, getValue("responseEtSearchStudent/orgClsNm"), getValue("responseEtSearchStudent/orgGroupNm"),
+   	    		getValue("responseEtSearchStudent/univNm"), getValue("responseEtSearchStudent/dpmjNm"));
+        }
+    }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 학생조회 팝업 후에 노드 세팅함
+	 * ============================================================================
+	 */
+   function setEtStudentInfo() {
+	   wfSno.setValue(getValue("responseEtSearchStudent/sno"));
+	   wfStudNm.setValue(getValue("responseEtSearchStudent/studNm"));
+	   wfStudNmEnm.setValue(getValue("responseEtSearchStudent/studNmEnm"));
+	   wfStudNmChineNm.setValue(getValue("responseEtSearchStudent/studNmChineNm"));
+	   wfBirthDt.setValue(getValue("responseEtSearchStudent/birthDt"));
+	   wfDpmjNm.setValue(getValue("responseEtSearchStudent/dpmjNm"));
+	   wfMjorNm.setValue(getValue("responseEtSearchStudent/mjorNm"));
+	   wfStudDvnm.setValue(getValue("responseEtSearchStudent/studDvnm"));
+	   wfScrgStatNm.setValue(getValue("responseEtSearchStudent/scrgStatNm"));
+	   wfFlangPassGb.setValue(getValue("responseEtSearchStudent/flangPassGb"));
+	   wfStudGrde.setValue(getValue("responseEtSearchStudent/studGrde"));
+	   wfFacSmrCnt.setValue(getValue("responseEtSearchStudent/facSmrCnt"));
+	   wfEnscDvnm.setValue(getValue("responseEtSearchStudent/enscDvnm"));
+	   wfLastScrgVarbNm.setValue(getValue("responseEtSearchStudent/lastScrgVarbNm"));
+	   wfRcer_cnt.setValue(getValue("responseEtSearchStudent/rcerCnt"));
+	   wfThe2MinrNm.setValue(getValue("responseEtSearchStudent/the2MjorNm"));
+	   wfMinrNm.setValue(getValue("responseEtSearchStudent/minrNm"));
+	   wfEnscDt.setValue(getValue("responseEtSearchStudent/enscDt"));
+	   wfLastScrgVarbDt.setValue(getValue("responseEtSearchStudent/lastScrgVarbDt"));
+	   wfTrsfAdmtSmrCnt.setValue(getValue("responseEtSearchStudent/trsfAdmtSmrCnt"));
+	   wfCphnNo.setValue(getValue("responseEtSearchStudent/cphnNo"));
+	   wfStudEmailAddr.setValue(getValue("responseEtSearchStudent/studEmailAddr"));
+	   wfRsdnTelno.setValue(getValue("responseEtSearchStudent/rsdnTelno"));
+	   wfPhoto.setValue(getValue("responseEtSearchStudent/photoFileId"));
+   }
+   /*
+	 * ============================================================================ *
+	 * 기능 : 그리드 학번으로 학생정보 검색 후에 노드 세팅함
+	 * ============================================================================
+	 */
+  function setEtGridStudentInfo() {
+	   wfSno.setValue(getValue("responseEtSearchStudent/object/studentList/object/sno"));
+	   wfStudNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/studNm"));
+	   wfStudNmEnm.setValue(getValue("responseEtSearchStudent/object/studentList/object/studNmEnm"));
+	   wfStudNmChineNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/studNmChineNm"));
+	   wfBirthDt.setValue(getValue("responseEtSearchStudent/object/studentList/object/birthDt"));
+	   wfDpmjNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/dpmjNm"));
+	   wfMjorNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/mjorNm"));
+	   wfStudDvnm.setValue(getValue("responseEtSearchStudent/object/studentList/object/studDvnm"));
+	   wfScrgStatNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/scrgStatNm"));
+	   wfFlangPassGb.setValue(getValue("responseEtSearchStudent/object/studentList/object/flangPassGb"));
+	   wfStudGrde.setValue(getValue("responseEtSearchStudent/object/studentList/object/studGrde"));
+	   wfFacSmrCnt.setValue(getValue("responseEtSearchStudent/object/studentList/object/facSmrCnt"));
+	   wfEnscDvnm.setValue(getValue("responseEtSearchStudent/object/studentList/object/enscDvnm"));
+	   wfLastScrgVarbNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/lastScrgVarbNm"));
+	   wfRcer_cnt.setValue(getValue("responseEtSearchStudent/object/studentList/object/rcerCnt"));
+	   wfThe2MinrNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/the2MjorNm"));
+	   wfMinrNm.setValue(getValue("responseEtSearchStudent/object/studentList/object/minrNm"));
+	   wfEnscDt.setValue(getValue("responseEtSearchStudent/object/studentList/object/enscDt"));
+	   wfLastScrgVarbDt.setValue(getValue("responseEtSearchStudent/object/studentList/object/lastScrgVarbDt"));
+	   wfTrsfAdmtSmrCnt.setValue(getValue("responseEtSearchStudent/object/studentList/object/trsfAdmtSmrCnt"));
+	   wfCphnNo.setValue(getValue("responseEtSearchStudent/object/studentList/object/cphnNo"));
+	   wfStudEmailAddr.setValue(getValue("responseEtSearchStudent/object/studentList/object/studEmailAddr"));
+	   wfRsdnTelno.setValue(getValue("responseEtSearchStudent/object/studentList/object/rsdnTelno"));
+	   wfPhoto.setValue(getValue("responseEtSearchStudent/object/studentList/object/photoFileId"));
+  }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 부속기관 원생조회 팝업 * 인수 : 번호/성명, 성명 오브젝트 * 리턴 :
+	 * "responseEtSearchStudentInfo/sno" 학번 "responseEtSearchStudentInfo/snoNm"
+	 * 학생성명
+	 * ============================================================================
+	 */
+   function etAffiliateStudentSearch(e, textObj, nameObj) {
+   	gmSearchTypeFlag = "form";
+   	gmTextObjID = textObj.getID();
+   	gmNameObjID = nameObj.getID();
+   	nameObj.setValue("");
+   	var value = textObj.getValue();
+   	textObj.setValue("");
+   	
+   	WebSquare.ModelUtil.removeChildNodes( "responseEtAffiliateSearchStudentInfo" );
+   	
+   	if(e.type != 'click') {
+   		if(value.length < 1) {
+   			return;
+   		} else if(value.length < 2) {
+   			showMsg("C_I054", "원생검색 번호/성명을 2자 이상");
+   			return;
+   		}
+   	} 
+   	
+   	getEtAffiliateStudentInfo(e.type, value, arguments[3], arguments[4]);
+   }
+
+   /*
+	 * ============================================================================ *
+	 * 기능 : 부속기관 원생조회 팝업 && 그리드에 입력 * 인수 : submissionId, object * 리턴 : 결과배열,
+	 * 노드생성
+	 * ============================================================================
+	 */
+   function etAffiliateStudentSearchGrid(eType, grid , row , col, initCols) {
+   	gmSearchTypeFlag = "grid";
+   	gmSearchGridRow = row;
+   	gmSearchGridCol = col;
+   	gmSearchGridObjID = grid.getID();
+
+   	grid.setCellData( row , col+2 , "" );
+   	var value = grid.getCellData(row, col);
+   	grid.setCellData( row , col , "" );
+   	
+   	WebSquare.ModelUtil.removeChildNodes( "responseEtAffiliateSearchStudentInfo" );
+   	
+   	if(initCols != undefined) {
+   		for(var index in initCols) {
+   			if(initCols[index] != "") {
+   				grid.setCellData( row , initCols[index] , "" );	
+   			}
+   		}
+   	}
+
+   	if(eType != "click"){
+   		if(value.length < 1) {
+   			return;
+   		} else if(value.length < 2) {
+   			showMsg("C_I054", "원생검색 번호/성명을 2자 이상");
+   			return;
+   		}
+   	} 
+   	
+   	getEtAffiliateStudentInfo(eType, value, arguments[5], arguments[6], arguments[7]);
+   }
+
+
+   /*
+	 * ============================================================================ *
+	 * 기능 : 부속기관 원생조회 조회 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+   function getEtAffiliateStudentInfo(type,value) {
+   	var encodeValue = "";
+   	var arrResult = new Array();
+   	
+   	if(value != "") {
+   		encodeValue = WebSquare.text.BASE64URLEncoder(value);
+   	} 
+   	
+   	if(type == "click") {
+   		if(typeof setNavigator != 'function') {
+			openNewPopup( "setEtAffiliateStudentPopupValue", "/views/et/uh/ET_UH_0001.xml", {width: 900, height:540}, {imstNo:encodeValue});
+			return;
+		}
+   		openPopup( "setEtAffiliateStudentPopupValue", "/views/et/uh/ET_UH_0001.xml", {width: 900, height:540}, {imstNo:encodeValue});
+   		return;
+   	}
+       setValue("requestEtAffiliateSearchStudent/imstNo", value);
+       execSubmission("getCommonDataSubm", "requestEtAffiliateSearchStudent", "responseEtAffiliateSearchStudent", "/et/listAffiliateStudentSearch.do");
+       var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseEtAffiliateSearchStudent/object/studentList/object");
+       var rowCount = dataArr.length;
+       
+       if(rowCount == 1) {
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/imstNo"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/imstNm"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/imstEnm"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/imstChnsNm"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/sexDvnm"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/lectNo"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/lectNm"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/nltyNm"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/visaNeedYn"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/psptNo"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/birth"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/localTelno"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/dmstTelno"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/mpno"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/dmstAddr"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/localBasAddr"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/mjorNm"));
+	       arrResult.push(getValue("responseEtAffiliateSearchStudent/object/studentList/object/visaKindCdNm"));
+           WebSquare.ModelUtil.removeChildNodes( "responseEtAffiliateSearchStudent" );
+           
+           setEtAffiliateStudentPopupValue(arrResult);
+       } else if(rowCount > 1) {
+       	WebSquare.ModelUtil.removeChildNodes( "responseEtAffiliateSearchStudent" );
+       	if(typeof setNavigator != 'function') {
+			openNewPopup( "setEtAffiliateStudentPopupValue", "/views/et/uh/ET_UH_0001.xml", {width: 900, height:540}, {imstNo:encodeValue});
+			return;
+		}
+       	openPopup( "setEtAffiliateStudentPopupValue", "/views/et/uh/ET_UH_0001.xml", {width: 900, height:540}, {imstNo:encodeValue});
+       } else if(rowCount == 0) {
+       	showMsg("C_I041", "부속기관 원생조회 번호/성명으로 검색한 결과");
+       }
+   }
+   
+   
+
+   /*
+	 * ============================================================================ *
+	 * 기능 : 부속기관 원생조회 팝업 후에 호출됨 * 인수 : arrResult * 리턴 :
+	 * ============================================================================
+	 */
+   function setEtAffiliateStudentPopupValue(arrResult) {
+   	    if(arrResult == undefined) {
+   	    	return;
+   	    }
+   	    
+        setValue("responseEtAffiliateSearchStudentInfo/imstNo",arrResult[0]);
+        setValue("responseEtAffiliateSearchStudentInfo/imstNm",arrResult[1]);
+        setValue("responseEtAffiliateSearchStudentInfo/imstEnm",arrResult[2]);
+        setValue("responseEtAffiliateSearchStudentInfo/imstChnsNm",arrResult[3]);
+        setValue("responseEtAffiliateSearchStudentInfo/sexDvnm",arrResult[4]);
+        setValue("responseEtAffiliateSearchStudentInfo/lectNo",arrResult[5]);
+        setValue("responseEtAffiliateSearchStudentInfo/lectNm",arrResult[6]);
+        setValue("responseEtAffiliateSearchStudentInfo/nltyNm",arrResult[7]);
+        setValue("responseEtAffiliateSearchStudentInfo/visaNeedYn",arrResult[8]);
+        setValue("responseEtAffiliateSearchStudentInfo/psptNo",arrResult[9]);
+        setValue("responseEtAffiliateSearchStudentInfo/birth",arrResult[10]);
+        setValue("responseEtAffiliateSearchStudentInfo/localTelno",arrResult[11]);
+        setValue("responseEtAffiliateSearchStudentInfo/dmstTelno",arrResult[12]);
+        setValue("responseEtAffiliateSearchStudentInfo/mpno",arrResult[13]);
+        setValue("responseEtAffiliateSearchStudentInfo/dmstAddr",arrResult[14]);
+        setValue("responseEtAffiliateSearchStudentInfo/localBasAddr",arrResult[15]);
+        setValue("responseEtAffiliateSearchStudentInfo/mjorNm",arrResult[16]);
+        setValue("responseEtAffiliateSearchStudentInfo/visaKindCdNm",arrResult[17]);
+        
+	    if(gmSearchTypeFlag == "form") {
+           	eval(gmTextObjID).setValue( arrResult[0] );
+           	eval(gmNameObjID).setValue( arrResult[1] );
+           	
+           	 if (typeof etAffiliateStudentSearchFormCallBack == 'function') {
+           		etAffiliateStudentSearchFormCallBack(arrResult);
+           	 }
+   	    	
+           	 return;
+   	    }
+   	    
+   	    eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol , arrResult[0] );
+   	    eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol+2 , arrResult[1] );
+   	    
+   	    if (typeof etAffiliateStudentSearchGridCallBack == 'function') {
+   	    	etAffiliateStudentSearchGridCallBack(gmSearchGridRow, gmSearchGridCol, arrResult);
+   	    }
+   }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 부속기관 거주자우편번호 * 인수 : null * 리턴 : dmstZip,dmstBasAddr,dmstDetlAddr
+	 * ============================================================================
+	 */
+   var etTempZip = "";
+   var etTempBasAddr = "";
+   function etZipOpenPopUp(zip, basAddr) {
+	etTempZip = (zip == undefined) ? "dmstZip" : zip;
+	etTempBasAddr = (basAddr == undefined) ? "dmstBasAddr" : basAddr;
+		   
+   	openPopup("etZipValue","/views/cm/PG_CM_0042.xml"
+               , { width      : 800
+                 , resizable  : false
+                 , scrollbars : false }
+               ) ; 
+   }
+
+   function etZipValue(returnArr){
+       if (returnArr != undefined && returnArr != null && returnArr.length > 0) {
+    	eval(etTempZip).setValue( returnArr[0]+returnArr[1] );
+    	eval(etTempBasAddr).setValue( returnArr[2] );
+       }
+   }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 이미지 팝업 * 인수 : fileSeq
+	 * ============================================================================
+	 */   
+   function etPreviewImage(fileSeq) {
+       openPopup("", "/views/cm/previewImage.xml", {width:350, height:330}, {fileSeq:fileSeq});
+   }
+   
+   /***************************************************************************
+	 * =============================================================== function :
+	 * getEtSelectBoxCode Description : 학생부속 공통코드 Parameter : submissionId,
+	 * selectTypeCodes, searchConditions, conditionValues ex)
+	 * getEtSelectBoxCode("sub",["CLSF_CD","HFFC_STAT_CD"],["clsfIdntLclsCd","clsfIdntMclsCd"],["1","3"]);
+	 * 각 코드와 쿼리 검색조건은 EtCodeSearchCondition.java, EtCodeTypes.java 파일 참고 Return :
+	 * ===============================================================*
+	 **************************************************************************/
+   function getEtSelectBoxCode(submissionId, selectTypeCodes, searchConditions, conditionValues){
+   	setValue("reqEtCode/selectCodeTypes" ,"");
+       
+       setAttribute("reqEtCode/selectCodeTypes","type","array");
+       
+       WebSquare.ModelUtil.removeChildNodes( "reqEtCode/selectCodeTypes" );
+       
+       for(var index in selectTypeCodes) {
+       	var doc = WebSquare.xml.parse( "<object>"+selectTypeCodes[index]+"</object>" );
+       	WebSquare.ModelUtil.setInstanceNode( doc, "reqEtCode/selectCodeTypes", null, "append" );
+       }
+       
+       for(var index in searchConditions) {
+       	setValue("reqEtCode/"+searchConditions[index], conditionValues[index]);
+       }
+       
+       execSubmission(submissionId, "reqEtCode", "responseEtCode", "/et/listEtCode.do");
+       
+       WebSquare.ModelUtil.removeChildNodes( "reqEtCode" );
+   }
+   
+   /***************************************************************************
+	 * =============================================================== function :
+	 * setEtFocusRow Description : 그리드 내부 포커스
+	 * ===============================================================*
+	 **************************************************************************/
+   function setEtFocusRow() {
+		var matchIdxArr = new Array();
+	    var grid   = arguments[0];
+	    var columnNames = arguments[1];
+	    var stringKeys   = arguments[2];       // 비교 대상 변수
+	    var stringKey = "";
+	    var row = "";
+	    
+	    for(var index in stringKeys){
+	    	stringKey += stringKeys[index];
+	    }
+	     
+	    for (var index = 0; index < grid.getRowCount(); index++) { 
+	         // 그리드내에 동일한 자료가 있는지 체크 한다. getMatched 함수는 한개의 필드에 대해서만 비교하기 때문에
+				// 일일이 비교 하여 처리
+	         var matchCnt = 0;
+	         var stringData = "";
+	         
+	         for (var colIndex in columnNames){  
+	             stringData += grid.getCellData( index, columnNames[colIndex] );   
+	         }   
+	         if (stringKey == stringData) {
+	        	grid.setFocusedCell(parseInt(index), columnNames[0] );
+	        	row = index;
+	         }
+	    }
+	    
+	    return row;
+	}
+   
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 그리드 등록/수정/삭제 처리 * 인수 : etSaveMultiAndDetailData(submissionId, grid,
+	 * reqNode, findNode, detailNode, target, url,delNode) * 결과 :
+	 * ============================================================================
+	 */
+   function etSaveMultiAndDetailData(submissionId, grid, reqNode, findNode, detailNode, target, url,delNode) {
+    /* 입력 또는 수정이 발생한 데이터를 담을 노드셋 초기화 */
+   	WebSquare.ModelUtil.removeChildNodes( reqNode );
+
+   	var listNode = findNode.substring(0,findNode.indexOf("/"));
+
+   	/* C,U,D 가 발생한 XML 데이터 추출 */
+    var grdDoc = grid.getModifiedXML();
+       
+   	/* XPath로 검색하여 일치하는 노드 목록을 Array로 반환한다. */
+   	var mapArr = WebSquare.xml.findNodes( grdDoc , findNode );               
+
+    WebSquare.ModelUtil.removeInstanceNode( reqNode );
+
+   	/* 추출한 xml data의 object별로 row의 CRUD 상태 노드를 추가한다 */
+   	var tmpXml;
+   	for(var i = 0; i < mapArr.length; i++) {
+   	    tmpXml = mapArr[i];
+   	    var statusValue = WebSquare.xml.getAttribute( tmpXml, "statusValue" );
+   	    WebSquare.xml.setValue( tmpXml, "status", statusValue );
+   	    /* 실제 저장할 때 서버로 전달할 xml 데이터에 한줄씩 append 한다. */
+   	    WebSquare.ModelUtil.setInstanceNode( tmpXml, detailNode+"/"+listNode, null, "append" );
+   	}
+   	
+   	/* 서버로 전달할 xml data가 array type 임을 추가 */
+   	setAttribute(detailNode + "/" + listNode, "type", "array");
+   	setAttribute(detailNode, "type", "object");
+   	
+   	var findDetailNode = WebSquare.ModelUtil.findInstanceNode( detailNode ); 
+   	WebSquare.ModelUtil.setInstanceNode( findDetailNode, reqNode, null, "replaceAll" );
+
+   	reqNode = reqNode + detailNode.substring(detailNode.lastIndexOf("/"), detailNode.length);
+   	
+   	WebSquare.ModelUtil.removeChildNodes( detailNode );
+   	
+   	for(var index in delNode){
+    	WebSquare.ModelUtil.removeInstanceNodes(reqNode+"/"+listNode+"/object/"+delNode[index]);	
+    }
+   	/* 서브미션 실행 */
+   	execSubmission(submissionId, reqNode, target, url);                 
+   }
+   
+    /*
+	 * ============================================================================ *
+	 * 기능 : 강좌코드 쪼개기 * 인수 : splitEtLectCd(lectCd); * 결과 : return
+	 * array([년도],[학기],[교육과정])
+	 * ============================================================================
+	 */
+   function splitEtLectCd(lectCd) {
+	   return lectCd.split("-");
+   }
+   
+    /*
+	 * ============================================================================ *
+	 * 기능 : 전화번호 합치기 * 인수 : telno1, telno2, telno3, node
+	 * ============================================================================
+	 */
+   function etSumTelno(telno1, telno2, telno3, node) {
+	   if ( !gmIsEmpty(telno1.getValue()) && !gmIsEmpty(telno2.getValue()) && !gmIsEmpty(telno3.getValue()) ) {
+           setValue(node, telno1.getValue() + "-" + telno2.getValue() + "-" + telno3.getValue());
+       } else {
+           setValue(node, "");
+       }
+   }
+   
+    /*
+	 * ============================================================================ *
+	 * 기능 : 전화번호 쪼개기 * 인수 : telno1, telno2, telno3, node
+	 * ============================================================================
+	 */
+   function etDivisionTelno(telno1, telno2, telno3, node) {
+	   	var telNo = getValue(node).split("-");
+        telno1.setValue(telNo[0]);
+        telno2.setValue(telNo[1]);
+        telno3.setValue(telNo[2]); 
+   }
+   
+    /*
+	 * ============================================================================ *
+	 * 기능 : 전화번호 유효성 * 인수 : telno1, telno2, telno3, node
+	 * ============================================================================
+	 */
+   function etCheckTelno(telno1, telno2, telno3) {
+	   if ( !gmIsEmpty(telno1.getValue()) || !gmIsEmpty(telno2.getValue()) || !gmIsEmpty(telno3.getValue()) ) {
+           gmChkValid([telno1,telno2,telno3], true, "se_input_E");
+      } else {
+           gmChkValid([telno1,telno2,telno3], false, "se_input_E");
+      }
+   }
+   
+   /*
+	 * ============================================================================ *
+	 * 기능 : 주민등록번호 나누기 * 인수 : iidno1, iidno2, node
+	 * ============================================================================
+	 */
+   function etDivisionIidno(iidno1, iidno2, node) {
+	   iidno1.setValue(getValue(node).substring(0,6));
+	   iidno2.setValue(getValue(node).substring(6));
+   }   
+   
+   /***************************************************************************
+	 * =============================================================== * 기능 :
+	 * 주민번호 성별 /생년월일/생일 추출 (포커스 아웃시 발생) * 인수 : 주민번호ID, 성별ref, 생년월일 ref, 생일 ref *
+	 * 결과 : ===============================================================*
+	 **************************************************************************/
+   function iidCheckEt(iidno,sexRef,birthRef,btdMmDdRef){
+        var iid = iidno.getValue();
+        var yy = null;
+        if(iid.length != 13)  return;
+        // 주민등록번호에따라 성별과 생년월일
+        var sex = iid.substring(6,7);
+         if(sex=='1'||sex=='3'||sex=='5'||sex=='7'||sex=='9'){
+           if(sex=='1'){
+               yy = '19'
+           }else if(sex=='3'){
+               yy = '20'
+           }else if(sex=='5'){
+               yy = '19'
+           }else if(sex=='7'){
+               yy = '20'
+           }else if(sex=='9'){
+               yy = '18'
+           }
+           setValue(sexRef,1);
+         }else if(sex=='2'||sex=='4'||sex=='6'||sex=='8'||sex=='0'){
+           if(sex=='2'){
+               yy = '19'
+           }else if(sex=='4'){
+               yy = '20'
+           }else if(sex=='6'){
+               yy = '19'
+           }else if(sex=='8'){
+               yy = '20'
+           }else if(sex=='0'){
+               yy = '18'
+           }
+           setValue(sexRef,2);
+         }
+        var birth = iid.substring(0,6);
+         setValue(birthRef,yy+birth);
+        
+        if(btdMmDdRef != ""){
+	        var btdMmDd = iid.substring(2,6);
+	         setValue(btdMmDdRef,btdMmDd);
+        }
+   }
+   /*
+	 * ============================================================================ *
+	 * 기능 : 행사 계획서 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+    function onClickEvntPlanPopUp(eventType, subMissionId, type, year, smrCd, grpClsCd, grpCd, grpNm, evntClsCd, studEvntNo, evntNm){
+    	var eType       = WebSquare.text.BASE64URLEncoder(type);
+    	var eYear       = WebSquare.text.BASE64URLEncoder(year);
+   	    var eSmrCd      = WebSquare.text.BASE64URLEncoder(smrCd);
+   	    var eGrpCd      = WebSquare.text.BASE64URLEncoder(grpCd);
+   	    var eGrpClsCd   = WebSquare.text.BASE64URLEncoder(grpClsCd);
+   	    var eGrpNm      = WebSquare.text.BASE64URLEncoder(grpNm);
+   	    var eEvntClsCd  = WebSquare.text.BASE64URLEncoder(evntClsCd);
+   	    var eStudEvntNo = WebSquare.text.BASE64URLEncoder(studEvntNo);
+   	    var eEvntNm     = WebSquare.text.BASE64URLEncoder(evntNm);
+        if(eventType == 'click'){
+	        openPopup("onClickEvntPlanPopUpCallBack", "/views/st/hs/ST_HS_2040.xml", {width : 915, height : 720, resizable : false, scrollbars : false }, {pType:eType, pYear:eYear, pSmrCd:eSmrCd,  pGrpClsCd:eGrpClsCd, pGrpCd:eGrpCd, pGrpNm:eGrpNm, pEvntClsCd:eEvntClsCd, pStudEvntNo:eStudEvntNo, pEvntNm:eEvntNm});
+        }
+   }
+   /*
+	 * ============================================================================ *
+	 * 기능 : 행사 결과서 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+   function onClickEvntRsltPopUp(eventType, subMissionId, type, year, smrCd, grpClsCd, grpCd, grpNm, evntClsCd, studEvntNo, evntNm){
+   	   var eType       = WebSquare.text.BASE64URLEncoder(type);
+   	   var eYear       = WebSquare.text.BASE64URLEncoder(year);
+       var eSmrCd      = WebSquare.text.BASE64URLEncoder(smrCd);
+       var eGrpCd      = WebSquare.text.BASE64URLEncoder(grpCd);
+       var eGrpClsCd   = WebSquare.text.BASE64URLEncoder(grpClsCd);
+       var eGrpNm      = WebSquare.text.BASE64URLEncoder(grpNm);
+       var eEvntClsCd  = WebSquare.text.BASE64URLEncoder(evntClsCd);
+       var eStudEvntNo = WebSquare.text.BASE64URLEncoder(studEvntNo);
+       var eEvntNm     = WebSquare.text.BASE64URLEncoder(evntNm);
+       
+       if(eventType == 'click'){
+ 	        openPopup("onClickEvntRsltPopUpCallBack", "/views/st/hs/ST_HS_2050.xml", {width : 915, height : 720, resizable : false, scrollbars : false }, {pType:eType, pYear:eYear, pSmrCd:eSmrCd,  pGrpClsCd:eGrpClsCd, pGrpCd:eGrpCd, pGrpNm:eGrpNm, pEvntClsCd:eEvntClsCd, pStudEvntNo:eStudEvntNo, pEvntNm:eEvntNm});
+       }
+   }
+   /*
+	 * ============================================================================ *
+	 * 기능 : 구인정보 학생배정 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+   function onClickApwkApplRegPopUp(eventType, subMissionId, apwkReceDt, entpCd, apwkCobzNm){
+	   var eApwkReceDt  = WebSquare.text.BASE64URLEncoder(apwkReceDt);
+	   var eEntpCd      = WebSquare.text.BASE64URLEncoder(entpCd);
+	   var eApwkCobzNm  = WebSquare.text.BASE64URLEncoder(apwkCobzNm);
+	   
+	   if(eventType == 'click'){
+		   openPopup("onClickApwkApplRegPopUpCallBack", "/views/st/cu/ST_CU_2045.xml", {width : 915, height : 600, resizable : false, scrollbars : false }, {pApwkReceDt:eApwkReceDt, pEntpCd:eEntpCd, pApwkCobzNm:eApwkCobzNm});
+	   }
+   }
+   /***************************************************************************
+	 * =============================================================== function :
+	 * upEtStep,downEtStep Description : 이력서 등록 이전 탭,이력서 등록 다음 탭 Parameter :
+	 * Return : ===============================================================*
+	 **************************************************************************/
+   function upEtStep(obj){
+	   obj.setSelectedTabIndex( obj.getSelectedTabIndex() + 1 );
+   }
+   function downEtStep(obj){
+	   obj.setSelectedTabIndex( obj.getSelectedTabIndex() - 1 );
+   }
+   
+   /***************************************************************************
+	 * =============================================================== function :
+	 * etFileOpenPopup Description : 학생부속 첨부파일 팝업 Parameter : Return :
+	 * ===============================================================*
+	 **************************************************************************/
+   var etFileGridName = "";
+   function etFileOpenPopup(grid) {
+	   etFileGridName = grid.getID();
+	   
+	   if(typeof setNavigator != 'function') {
+			openNewPopup( "etFilOpenCallback", "/views/st/hs/ST_HS_0002.xml"
+	                    , { width    : 500
+		                , height     : 170
+		                , resizable  : false
+		                , scrollbars : false }, {type:'openNewPopup'});
+			return;
+	   }
+	   
+       openPopup("etFilOpenCallback", "/views/st/hs/ST_HS_0002.xml"
+       , { width    : 500
+       , height     : 170
+       , resizable  : false
+       , scrollbars : false }, {type:'openPopup'});
+   } 
+  
+   function etFilOpenCallback(retArr) {
+        // 파일명이 없으면 그리드에 추가 하지 않는다.
+        if (retArr[0] == "" || retArr[0] == null) return;
+        var row = eval(etFileGridName).insertRow( eval(etFileGridName).getRowCount() );
+        eval(etFileGridName).setCellData( row , "fileNm" ,            retArr[0] );
+        eval(etFileGridName).setCellData( row , "tmpFullPathFileNm" , retArr[1] );
+        eval(etFileGridName).setCellData( row , "filePathNm" ,        retArr[1] );
+        eval(etFileGridName).setCellData( row , "newer" ,             retArr[2] );
+        eval(etFileGridName).setCellDisabled( row , "downloadBtn" , true );
+        eval(etFileGridName).setCellData( row , "downloadBtn" , '' );
+   }
+   
+   /***************************************************************************
+	 * =============================================================== function :
+	 * etFileDelete Description : 학생부속 첨부파일 삭제 Parameter : Return :
+	 * ===============================================================*
+	 **************************************************************************/
+   function etFileDelete(grid,row,sub,req,res,url) {
+       if(grid.getRowStatus(row) == 'C') {
+    	   grid.removeRow(row);
+           return;
+       }
+       
+       execSubmission(sub, req, res, url);
+    }
+   /*
+	 * ============================================================================ *
+	 * 기능 : 교류행사 보고서 특별 역할인원 등록팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+    function onClickEvntStafPopUp(e, subMissionId, exevNo, exevNm, exevSdt, exevEdt, exevCn){
+    	var eExevNo     = WebSquare.text.BASE64URLEncoder(exevNo);
+    	var eExevNm     = WebSquare.text.BASE64URLEncoder(exevNm);
+    	var eExevSdt    = WebSquare.text.BASE64URLEncoder(exevSdt);
+    	var eExevEdt    = WebSquare.text.BASE64URLEncoder(exevEdt);
+    	var eExevCn     = WebSquare.text.BASE64URLEncoder(exevCn);
+   	    
+        if(e.type == 'click'){
+	        openPopup("onClickEvntStafPopUpCallBack", "/views/st/kh/ST_KH_2075.xml", {width : 915, height : 500, resizable : false, scrollbars : false }, {pExevNo:eExevNo, pExevNm:eExevNm, pExevSdt:eExevSdt, pExevEdt:eExevEdt, pExevCn:eExevCn});
+        }
+   }
+    /*
+	 * ============================================================================ *
+	 * 기능 : 의약품 조회 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+    function drugSearchPopUp(e, subMissionId, drugCd, drugNm){
+        var drugCdID = WebSquare.text.BASE64URLEncoder(drugCd.getID());
+  	    var drugNmID = WebSquare.text.BASE64URLEncoder(drugNm.getID());
+    	var eDrugCd  = WebSquare.text.BASE64URLEncoder(drugCd.getValue());
+        	
+    	if(e.type != 'click') {
+        	if(drugCd.getValue().length < 1) {
+        		drugNm.setValue("");
+         		return;
+         	}
+        } 
+        	
+    	if(e.type == 'click'){
+    		  var rArr = openPopup("onClickDrugSearchPopUpCallBack","/views/et/bg/ET_BG_2015.xml"
+		                   , { width      : 700
+		                     , height     : 530
+		                     , resizable  : false
+		                     , scrollbars : false }
+		                   , {pDrugCd:eDrugCd,drugCdID:drugCdID,drugNmID:drugNmID}) ;
+    	}else{
+	          WebSquare.ModelUtil.setInstanceValue( "req/drugCd" , drugCd.getValue() );
+	          execSubmission(subMissionId, "req", "res", "/bg/listDrugCd.do");
+	  		  var dataArr = WebSquare.ModelUtil.findInstanceNodes("res/object/drugCdList/object");
+	  	      rowCount = dataArr.length;
+	           	      
+	  	      if(rowCount == 1){ // 데이터가 하나면 바로 뿌려줌
+	  		  	  var arrResult = new Array();
+	  		      arrResult.push(getValue("res/object/drugCdList/object[1]/drugCd"));
+	  		      arrResult.push(getValue("res/object/drugCdList/object[1]/drugNm"));
+	  		      onClickDrugSearchPopUpCallBack(arrResult,drugCd.getID(),drugNm.getID());
+	  	      }else if(rowCount == 0){
+	  	    	    drugCd.setValue("");
+	  	    	    drugNm.setValue("");
+	  	        	showMsg("C_I041", "검색한 결과");
+	  	      }else {   // 데이터가 여러개인 경우 팝업띄움
+	  			  var rArr = openPopup("onClickDrugSearchPopUpCallBack","/views/et/bg/ET_BG_2015.xml"
+	  	                     , { width      : 700
+	  	                     , height     : 530
+	  	                     , resizable  : false
+	  	                     , scrollbars : false }
+	  			           , {pDrugCd:eDrugCd,drugCdID:drugCdID,drugNmID:drugNmID}) ;
+	  		  }
+      	}
+    } 
+    /***************************************************************************
+	 * =============================================================== function :
+	 * onClickDrugSearchPopUpCallBack Description : ☆ 화면에
+	 * onClickDrugSearchPopUpCallBack(arrResult) 함수를 생성한 후에 처리 Parameter :
+	 * arrResult( 약품 정보 배열) Return : 부속기간 보건소 의약품 정보 배열
+	 * ===============================================================*
+	 **************************************************************************/
+    function onClickDrugSearchPopUpCallBack(arrResult, drugCdID, drugNmID) {
+    	if (arrResult != undefined && arrResult != null) {
+    		eval(drugCdID).setValue( arrResult[0] );              
+    		eval(drugNmID).setValue( arrResult[1] );              
+        }
+    }
+    /***************************************************************************
+	 * =============================================================== * 기능 :
+	 * 의약품 팝업 호출(그리드) * 인수 : 서브미션, 그리드명, 오브젝트 * 결과 :
+	 * ===============================================================*
+	 **************************************************************************/
+    function onClickDrugSearchGridPopUp(eType, subMissionId, grid, row, col){
+        var eDrugCd = WebSquare.text.BASE64URLEncoder(grid.getCellData(row, col));
+        
+        etSearchTypeFlag = "grid";
+    	etSearchGridRow = row;
+        etSearchGridCol = col;
+    	etSearchGridObjID = grid.getID();  
+        
+        if(eType == 'click'){
+      	   var rArr = "";
+        	if(typeof setNavigator != 'function') {
+        		rArr = openNewPopup("onClickDrugSearchGridPopUpCallBack","/views/et/bg/ET_BG_2015.xml"
+   	      			 , { width      : 700
+	                 , height     : 530
+	                 , resizable  : false
+	                 , scrollbars : false }
+		           , {pDrugCd:eDrugCd}) ;
+		   			if (rArr != undefined && rArr != null) {
+		   				  eval(grid).setCellData( row , col , rArr[0] );
+		   			      eval(grid).setCellData( row , col+2 , rArr[1] );
+		   			}
+    			return;
+    		}
+      	   rArr = openPopup("onClickDrugSearchGridPopUpCallBack","/views/et/bg/ET_BG_2015.xml"
+	      			 , { width      : 700
+	                 , height     : 530
+	                 , resizable  : false
+	                 , scrollbars : false }
+		           , {pDrugCd:eDrugCd}) ;
+    			if (rArr != undefined && rArr != null) {
+    				  eval(grid).setCellData( row , col , rArr[0] );
+    			      eval(grid).setCellData( row , col+2 , rArr[1] );
+    			}
+        }else{
+      	  WebSquare.ModelUtil.setInstanceValue( "reqDrug/drugCd" , grid.getCellData(row, col));
+          execSubmission(subMissionId, "reqDrug", "resDrug","/bg/listDrugCd.do");
+      	  var dataArr = WebSquare.ModelUtil.findInstanceNodes("resDrug/object/drugCdList/object");
+          rowCount = dataArr.length; 
+            if(rowCount == 1){ // 데이터가 하나면 바로 뿌려줌
+            	var arrResult = new Array();
+	  		    arrResult.push(getValue("resDrug/object/drugCdList/object[1]/drugCd"));
+	  		    arrResult.push(getValue("resDrug/object/drugCdList/object[1]/drugNm"));
+	  		    arrResult.push(getValue("resDrug/object/drugCdList/object[1]/manufCmpnNm"));
+	  		    onClickDrugSearchGridPopUpCallBack(arrResult);
+            }else {   // 데이터가 여러개인 경우 팝업띄움
+            	var rArr = openPopup("onClickDrugSearchGridPopUpCallBack","/views/et/bg/ET_BG_2015.xml"
+   	      			 , { width      : 700
+   	                 , height     : 530
+   	                 , resizable  : false
+   	                 , scrollbars : false }
+   		           , {pDrugCd:eDrugCd}) ;
+       			if (rArr != undefined && rArr != null) {
+       				  eval(grid).setCellData( row , col , rArr[0] );
+       			      eval(grid).setCellData( row , col+2 , rArr[1] );
+       			}
+            }
+        }
+    }
+    /*
+	 * ============================================================================ *
+	 * 기능 : 구급함 조회 팝업 * 인수 : value * 리턴 :
+	 * ============================================================================
+	 */
+    function erktSearchPopUp(e, subMissionId, erktNo, erktNm){
+        var erktNoID = WebSquare.text.BASE64URLEncoder(erktNo.getID());
+  	    var erktNmID = WebSquare.text.BASE64URLEncoder(erktNm.getID());
+    	var eErktNo  = WebSquare.text.BASE64URLEncoder(erktNo.getValue());
+        	
+    	if(e.type != 'click') {
+        	if(erktNo.getValue().length < 1) {
+        		erktNm.setValue("");
+         		return;
+         	}
+        } 
+        	
+    	if(e.type == 'click'){
+    		  var rArr = openPopup("onClickErktSearchPopUpCallBack","/views/et/bg/ET_BG_2025.xml"
+		                   , { width      : 700
+		                     , height     : 530
+		                     , resizable  : false
+		                     , scrollbars : false }
+		                   , {pErktNo:eErktNo,erktNoID:erktNoID,erktNmID:erktNmID}) ;
+    	}else{
+	          WebSquare.ModelUtil.setInstanceValue( "req/erktNo" , erktNo.getValue() );
+	          execSubmission(subMissionId, "req", "res", "/bg/listErktBas.do");
+	  		  var dataArr = WebSquare.ModelUtil.findInstanceNodes("res/object/erktBasList/object");
+	  	      rowCount = dataArr.length;
+	           	      
+	  	      if(rowCount == 1){ // 데이터가 하나면 바로 뿌려줌
+	  		  	  var arrResult = new Array();
+	  		      arrResult.push(getValue("res/object/erktBasList/object[1]/erktNo"));
+	  		      arrResult.push(getValue("res/object/erktBasList/object[1]/erktNm"));
+	  		      onClickErktSearchPopUpCallBack(arrResult,erktNo.getID(),erktNm.getID());
+	  	      }else if(rowCount == 0){
+	  	    	  erktNo.setValue("");
+	  	    	  erktNm.setValue("");
+	  	          showMsg("C_I041", "검색한 결과");
+	  	      }else {   // 데이터가 여러개인 경우 팝업띄움
+	  	    	  var rArr = openPopup("onClickErktSearchPopUpCallBack","/views/et/bg/ET_BG_2025.xml"
+	  	                     , { width      : 700
+	  	                     , height     : 530
+	  	                     , resizable  : false
+	  	                     , scrollbars : false }
+	  	    	             , {pErktNo:eErktNo,erktNoID:erktNoID,erktNmID:erktNmID}) ;
+	  		  }
+      	}
+    } 
+    /***************************************************************************
+	 * =============================================================== function :
+	 * onClickErktSearchPopUpCallBack Description : ☆ 화면에
+	 * onClickErktSearchPopUpCallBack(arrResult) 함수를 생성한 후에 처리 Parameter :
+	 * arrResult( 구급함 정보 배열) Return : 부속기간 보건소 구급함 정보 배열
+	 * ===============================================================*
+	 **************************************************************************/
+    function onClickErktSearchPopUpCallBack(arrResult, erktNoID, erktNmID) {
+    	if (arrResult != undefined && arrResult != null) {
+    		eval(erktNoID).setValue( arrResult[0] );              
+    		eval(erktNmID).setValue( arrResult[1] );              
+        }
+    }    
+    /***************************************************************************
+	 * =============================================================== * 기능 :
+	 * 구급함 팝업 호출(그리드) * 인수 : 서브미션, 그리드명, 오브젝트 * 결과 :
+	 * ===============================================================*
+	 **************************************************************************/
+    function onClickErktSearchGridPopUp(eType, subMissionId, grid, row, col){
+        var eErktNo = WebSquare.text.BASE64URLEncoder(grid.getCellData(row, col));
+        
+        etSearchTypeFlag = "grid";
+    	etSearchGridRow = row;
+        etSearchGridCol = col;
+    	etSearchGridObjID = grid.getID();  
+        
+        if(eType == 'click'){
+      	   var rArr = openPopup("onClickErktSearchGridPopUpCallBack","/views/et/bg/ET_BG_2025.xml"
+	      			 , { width      : 700
+	                 , height     : 530
+	                 , resizable  : false
+	                 , scrollbars : false }
+		           , {pErktNo:eErktNo}) ;
+    			if (rArr != undefined && rArr != null) {
+    				  eval(grid).setCellData( row , col , rArr[0] );
+    			      eval(grid).setCellData( row , col+2 , rArr[1] );
+    			}
+        }else{
+      	  WebSquare.ModelUtil.setInstanceValue( "reqErkt/erktNo" , grid.getCellData(row, col));
+          execSubmission(subMissionId, "reqErkt", "resErkt","/bg/listErktBas.do");
+                	  
+      	  var dataArr = WebSquare.ModelUtil.findInstanceNodes("resErkt/object/erktBasList/object");
+          rowCount = dataArr.length; 
+      	  
+            if(rowCount == 1){ // 데이터가 하나면 바로 뿌려줌
+            	var arrResult = new Array();
+	  		    arrResult.push(getValue("resErkt/object/erktBasList/object[1]/erktNo"));
+	  		    arrResult.push(getValue("resErkt/object/erktBasList/object[1]/erktNm"));
+	  		    onClickErktSearchGridPopUpCallBack(arrResult);
+            }else {   // 데이터가 여러개인 경우 팝업띄움
+            	var rArr = openPopup("onClickErktSearchGridPopUpCallBack","/views/et/bg/ET_BG_2025.xml"
+   	      			 , { width      : 700
+   	                 , height     : 530
+   	                 , resizable  : false
+   	                 , scrollbars : false }
+   		           , {pErktNo:eErktNo}) ;
+       			if (rArr != undefined && rArr != null) {
+       				  eval(grid).setCellData( row , col , rArr[0] );
+       			      eval(grid).setCellData( row , col+2 , rArr[1] );
+       			}
+            }
+        }
+    }
+    
+    /***************************************************************************
+	 * =============================================================== * 기능 :
+	 * setEtSmrCdControl * 인수 : selectBoxId * 결과 :
+	 * ===============================================================*
+	 **************************************************************************/
+    function setEtSmrCdControl(selectBoxId){
+    	selectBoxId.setNodeSet( "responseSelectBoxCode/object/selectboxCdSpcList/object[@id='SMR_CD']/list/object[cmcdVal='10' or cmcdVal='20']", "cmcdValNm", "cmcdVal");
+    }
+    
+    /***************************************************************************
+	 * =============================================================== * 기능 :
+	 * getEtOrgGroupCd * 인수 : * 결과 : * 설명 : 수원대일때 한국어교육원, 과학대일때 국제교육원
+	 * ===============================================================*
+	 **************************************************************************/
+    function getEtOrgGroupCd() {
+    	if(getUserInfoValue("sculDvcd") == "1"){
+            return "606";  
+        }
+        return "601";
+    }
+    
+    /***************************************************************************
+	 * =============================================================== function :
+	 * gmInitKeyCode Description : 초기화 시킬 키코드 확인 Parameter : event
+	 * ===============================================================*
+	 **************************************************************************/
+    function etInitKeyCode(e) {
+    	// TAB, SHIFT 체크
+    	if(e.keyCode == 9 || e.keyCode == 16) {
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    
+    /*
+	 * ============================================================================ *
+	 * 기능 : 일반행정 사번팝업 * 인수 : 사번/성명, 성명 오브젝트 * 리턴 :
+	 * "responseGmSearchUserInfo/eno" 사번 "responseGmSearchUserInfo/stafNm" 교직원성명
+	 * "responseGmSearchUserInfo/iidno" 주민등록번호 "responseGmSearchUserInfo/birth"
+	 * 생년월일 "responseGmSearchUserInfo/sexCd" 성별코드
+	 * "responseGmSearchUserInfo/sexCdNm" 성별코드명
+	 * "responseGmSearchUserInfo/clsfCd" 직급코드 "responseGmSearchUserInfo/clsfNm"
+	 * 직급명 "responseGmSearchUserInfo/deptCd" 부서코드
+	 * "responseGmSearchUserInfo/deptNm" 부서코드명
+	 * "responseGmSearchUserInfo/hffcStatCd" 재직상태코드
+	 * "responseGmSeazrchUserInfo/hffcStatDt" 재직상태일자
+	 * "responseGmSearchUserInfo/hffcStatNm" 재직상태명
+	 * "responseGmSearchUserInfo/nltyCd" 국적코드
+	 * "responseGmSearchUserInfo/nltyCdNm" 국적코드명
+	 * "responseGmSearchUserInfo/salcCd" 호봉코드 "responseGmSearchUserInfo/salcNm"
+	 * 호봉코드명 "responseGmSearchUserInfo/payFormCd" 급여형태코드
+	 * "responseGmSearchUserInfo/payFormCdNm" 급여형태코드명
+	 * "responseGmSearchUserInfo/rtirDt" 퇴직일자 "responseGmSearchUserInfo/jobcCd"
+	 * 직종코드 "responseGmSearchUserInfo/jobcCdNm" 직종코드명
+	 * "responseGmSearchUserInfo/payBankCd" 급여은행코드
+	 * "responseGmSearchUserInfo/payBankCdNm" 급여은행코드명
+	 * "responseGmSearchUserInfo/payAcno" 급여계좌번호
+	 * "responseGmSearchUserInfo/payDepoNm" 급여예금주명
+	 * ============================================================================
+	 */
+    function etUserSearch(e, textObj, nameObj) {
+    	gmSearchTypeFlag = "form";
+    	gmTextObjID = textObj.getID();
+    	gmNameObjID = nameObj.getID();
+    	
+    	nameObj.setValue("");
+    	var value = textObj.getValue();
+    	textObj.setValue("");
+    	
+    	WebSquare.ModelUtil.removeChildNodes( "responseGmSearchUserInfo" );
+    	if(e.type != 'click') {
+    		if(value.length < 1) {
+    			nameObj.setValue("");
+    			return;
+    		} else if(value.length < 1) {
+    			showMsg("C_I054", "사번/성명을 1자 이상");
+    			return;
+    		}
+    	} 
+    	getGmUserInfo(e.type, value, arguments[3], arguments[4], arguments[5], arguments[6],arguments[7]);
+    }
+    
+    /*
+	 * ============================================================================ *
+	 * 기능 : 일반행정 사번팝업 && 그리드에 입력 * 인수 : submissionId, object * 리턴 : 결과배열, 노드생성
+	 * "responseGmSearchUserInfo/eno" 사번 "responseGmSearchUserInfo/stafNm" 교직원성명
+	 * "responseGmSearchUserInfo/iidno" 주민등록번호 "responseGmSearchUserInfo/birth"
+	 * 생년월일 "responseGmSearchUserInfo/sexCd" 성별코드
+	 * "responseGmSearchUserInfo/sexCdNm" 성별코드명
+	 * "responseGmSearchUserInfo/clsfCd" 직급코드 "responseGmSearchUserInfo/clsfNm"
+	 * 직급명 "responseGmSearchUserInfo/deptCd" 부서코드
+	 * "responseGmSearchUserInfo/deptNm" 부서코드명
+	 * "responseGmSearchUserInfo/hffcStatCd" 재직상태코드
+	 * "responseGmSeazrchUserInfo/hffcStatDt" 재직상태일자
+	 * "responseGmSearchUserInfo/hffcStatNm" 재직상태명
+	 * "responseGmSearchUserInfo/nltyCd" 국적코드
+	 * "responseGmSearchUserInfo/nltyCdNm" 국적코드명
+	 * "responseGmSearchUserInfo/salcCd" 호봉코드 "responseGmSearchUserInfo/salcNm"
+	 * 호봉코드명 "responseGmSearchUserInfo/payFormCd" 급여형태코드
+	 * "responseGmSearchUserInfo/payFormCdNm" 급여형태코드명
+	 * "responseGmSearchUserInfo/rtirDt" 퇴직일자 "responseGmSearchUserInfo/jobcCd"
+	 * 직종코드 "responseGmSearchUserInfo/jobcCdNm" 직종코드명
+	 * "responseGmSearchUserInfo/payBankCd" 급여은행코드
+	 * "responseGmSearchUserInfo/payBankCdNm" 급여은행코드명
+	 * "responseGmSearchUserInfo/payAcno" 급여계좌번호
+	 * "responseGmSearchUserInfo/payDepoNm" 급여예금주명
+	 * ============================================================================
+	 */
+    function etUserSearchGrid(eType, grid , row , col, initCols) {
+    	gmSearchTypeFlag = "grid";
+    	gmSearchGridRow = row;
+    	gmSearchGridCol = col;
+    	gmSearchGridObjID = grid.getID();
+
+    	grid.setCellData( row , col+2 , "" );
+    	var value = grid.getCellData(row, col);
+    	grid.setCellData( row , col , "" );
+    	
+    	WebSquare.ModelUtil.removeChildNodes( "responseGmSearchUserInfo" );
+    	
+    	if(initCols != undefined) {
+    		for(var index in initCols) {
+    			if(initCols[index] != "") {
+    				grid.setCellData( row , initCols[index] , "" );	
+    			}
+    		}
+    	}
+
+    	if(eType != "click"){
+    		if(value.length < 1) {
+    			return;
+    		} else if(value.length < 1) {
+    			showMsg("C_I054", "사번/성명을 1자 이상");
+    			return;
+    		}
+    	} 
+    	
+    	getGmUserInfo(eType, value, arguments[5], arguments[6], arguments[7], arguments[8]);
+    }
+    
+    /*
+	 * ============================================================================ *
+	 * 기능 : 일반행정 호실팝업 && 그리드에 입력 * 인수 : submissionId, object * 리턴 : 결과배열, 노드생성
+	 * ============================================================================
+	 */
+     function etRoomSearchGrid(eType, grid , row , col, initCols) {
+     	gmSearchTypeFlag = "grid";
+     	gmSearchGridRow = row;
+     	gmSearchGridCol = col;
+     	gmSearchGridObjID = grid.getID();
+     	
+     	// var value = grid.getCellData(row, col);
+     	
+     	grid.setCellData( row , col+2 , "" );
+     	var value = grid.getCellData(row, col);
+     	grid.setCellData( row , col , "" );
+     	WebSquare.ModelUtil.removeChildNodes( "responseGmSearchRoomInfo" );
+     	
+     	if(initCols != undefined) {
+     		for(var index in initCols) {
+     			if(initCols[index] != "") {
+     				grid.setCellData( row , initCols[index] , "" );	
+     			}
+     		}
+     	}
+     	
+     	if(eType != "click"){
+     		if(value.length < 1) {
+     			return;
+     		} else if(value.length < 2) {
+     			showMsg("C_I054", "호실 코드/명을 2자 이상");
+     			return;
+     		}
+     	}
+     	
+     	getGmRoomInfo(eType, value);
+     }
+    
+     /*============================================================================
+      ** 기능  : 학생 국제협력 국가코드 팝업 && 그리드에 입력
+      ** 인수  : submissionId, object
+      ** 리턴  : 결과배열, 노드생성
+          "responseGmSearchUserInfo/eno"        사번            
+          "responseGmSearchUserInfo/stafNm"     교직원성명      
+          "responseGmSearchUserInfo/rtirDt" 퇴직일자
+          "responseGmSearchUserInfo/jobcCd" 직종코드
+          "responseGmSearchUserInfo/jobcCdNm" 직종코드명
+          "responseGmSearchUserInfo/payDepoNm" 급여예금주명
+      ============================================================================*/
+      function natnCertiSearchGrid(eventType, grid , row , col, initCols) {
+     	gmSearchTypeFlag = "grid";
+       	gmSearchGridRow = row;
+       	gmSearchGridCol = col;
+       	gmSearchGridObjID = grid.getID();
+
+      	grid.setCellData( row , col+2 , "" );
+      	var value = grid.getCellData(row, col);
+      	grid.setCellData( row , col , "" );
+      	
+      	WebSquare.ModelUtil.removeChildNodes( "responseLicenseList" );
+      	
+      	if(initCols != undefined) {
+      		for(var index in initCols) {
+      			if(initCols[index] != "") {
+      				grid.setCellData( row , initCols[index] , "" );	
+      			}
+      		}
+      	}
+
+      	if(eventType != "click"){
+      		if(value.length < 1) {
+      			return;
+      		} else if(value.length < 1) {
+      			showMsg("C_I054", "자격증 코드/명을 1자 이상");
+      			return;
+      		}
+      	} 
+      	
+      	natnCertiInfo(eventType, value, arguments[5], arguments[6], arguments[7], arguments[8]);
+      }
+      /*============================================================================
+      ** 기능  : 국가 자격증 코드 팝업
+      ** 인수  : value
+      ** 리턴  : 
+      ============================================================================*/
+      function natnCertiInfo(type, value) {
+      	var arrResult = new Array();
+      	var natnCertiCdValue = arguments[2];
+      	var encodeValue = "";
+      	var encodeNatnCertiCdValue = "";
+      	if(value != "") {
+      		natnCertiCdValue = WebSquare.text.BASE64URLEncoder(value);
+      	}
+
+      	if(natnCertiCdValue != undefined) {
+      		if(natnCertiCdValue != "") {
+      			encodeNatnCertiCdValue = WebSquare.text.BASE64URLEncoder(natnCertiCdValue);
+      		} 
+      		setValue("requestLicenseList/natnCertiCd", natnCertiCdValue);	
+      	}
+      	
+          setValue("requestLicenseList/natnCertiCd", value);
+          
+      	if(type == "click") {
+      		if(typeof setNavigator != 'function') {
+      			openNewPopup( "setNatnCertiPopupValue", "/views/st/cu/ST_CU_0001.xml", {width: 800, height:550}, {natnCertiCd:natnCertiCdValue});
+      			return;
+      		}
+      		openPopup( "setNatnCertiPopupValue", "/views/st/cu/ST_CU_0001.xml", {width: 800, height:550}, {natnCertiCd:natnCertiCdValue});
+      		return;
+      	}
+      	
+          execSubmission("getCommonDataSubm", "requestNatnCertiCd", "responseNatnCertiCd", "/et/listNatnCertiCd.do");
+          
+          var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseNatnCertiCd/object/licenseList/object");
+          var rowCount = dataArr.length;
+          
+          if(rowCount == 1) {
+          	  arrResult.push(getValue("responseNatnCertiCd/object/natnCertiCd/object/natnCertiCd"));
+              arrResult.push(getValue("responseNatnCertiCd/object/natnCertiCd/object/certiNm"));
+              arrResult.push(getValue("responseNatnCertiCd/object/natnCertiCd/object/implIsttNm"));
+              
+              WebSquare.ModelUtil.removeChildNodes( "responseNatnCertiCd" );
+              
+              setNatnCertiPopupValue(arrResult);
+          } else if(rowCount > 1) {
+          	WebSquare.ModelUtil.removeChildNodes( "responseNatnCertiCd" );
+          	if(typeof setNavigator != 'function') {
+      			openNewPopup( "setNatnCertiPopupValue", "/views/st/cu/ST_CU_0001.xml", {width: 800, height:550}, {natnCertiCd:natnCertiCdValue});
+      			return;
+      		}
+          	openPopup( "setNatnCertiPopupValue", "/views/st/cu/ST_CU_0001.xml", {width: 800, height:550}, {natnCertiCd:natnCertiCdValue});
+          } else if(rowCount == 0) {
+          	showMsg("C_I041", "국가코드로 검색한 결과");
+          }
+      }
+      /*============================================================================
+      ** 기능  : 국가 자격증 조회 팝업 후에 수행됨
+      ** 인수  : arrResult
+      ** 리턴  : 
+      ============================================================================*/
+      function setNatnCertiPopupValue(arrResult) {
+      	if(arrResult == undefined) {
+      		return;
+      	}
+      	
+      	  setValue("responseLicenseList/natnCertiCd",arrResult[0]);       
+          setValue("responseLicenseList/certiNm",arrResult[1]);    
+          setValue("responseLicenseList/implIsttNm",arrResult[2]);     
+
+          if(gmSearchTypeFlag == "form") {
+          	eval(etTextObjID).setValue( arrResult[0] );
+          	eval(etNameObjID).setValue( arrResult[1] );
+          	
+          	//화면에서 부가정보를 사용할 경우에  licenseGridCallBack 함수를 만들어 놓고 사용한다
+          	if (typeof licenseGridCallBack == 'function') {
+          		licenseGridCallBack(arrResult);
+          	}
+      		return;
+      	}
+      	
+      	eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol , arrResult[0] );
+      	eval(gmSearchGridObjID).setCellData( gmSearchGridRow , gmSearchGridCol+2 , arrResult[1] );
+      	
+      	//화면에서 부가정보를 사용할 경우에  gmUserSearchGridCallBack 함수를 만들어 놓고 사용한다
+      	if (typeof licenseGridCallBack == 'function') {
+      		licenseGridCallBack(gmSearchGridRow, gmSearchGridCol, arrResult);
+      	}
+      }
+      
+      
+      /*============================================================================
+      ** 기능  : 일반행정 부서팝업
+      ** 인수  : 코드/부서명, 부서명 오브젝트
+      ** 리턴  : 
+          "responseGmSearchDeptInfo/orgCd"     부서코드            
+          "responseGmSearchDeptInfo/orgNm"     부서명     
+      ============================================================================*/
+      function etDeptSearch(e, textObj, nameObj) {
+      	gmSearchTypeFlag = "form";
+      	gmTextObjID = textObj.getID();
+      	gmNameObjID = nameObj.getID();
+      	
+      	nameObj.setValue("");
+      	var value = textObj.getValue();
+      	textObj.setValue("");
+      	
+      	WebSquare.ModelUtil.removeChildNodes( "responseGmSearchDeptInfo" );
+      	
+      	if(e.type != 'click') {
+      		if(value.length < 1) {
+      			return;
+      		} else if(value.length < 2) {
+      			showMsg("C_I054", "부서 코드/명을 2자 이상");
+      			return;
+      		}
+      	} 
+      	
+      	getGmDeptInfo(e.type, value, arguments[3], arguments[4]);
+      }
+
+      /*============================================================================
+      ** 기능  : 일반행정 부서팝업 && 그리드에 입력
+      ** 인수  : submissionId, object
+      ** 리턴  : 결과배열, 노드생성
+          "responseGmSearchDeptInfo/orgCd"     부서코드            
+          "responseGmSearchDeptInfo/orgNm"     부서명      
+      ============================================================================*/
+      function etDeptSearchGrid(eType, grid , row , col, initCols) {
+      	gmSearchTypeFlag = "grid";
+      	gmSearchGridRow = row;
+      	gmSearchGridCol = col;
+      	gmSearchGridObjID = grid.getID();
+      	
+      	var value = grid.getCellData(row, col);
+      	
+      	grid.setCellData( row , col+2 , "" );
+      	var value = grid.getCellData(row, col);
+      	grid.setCellData( row , col , "" );
+      	WebSquare.ModelUtil.removeChildNodes( "responseGmSearchDeptInfo" );
+      	
+      	if(initCols != undefined) {
+      		for(var index in initCols) {
+      			if(initCols[index] != "") {
+      				grid.setCellData( row , initCols[index] , "" );	
+      			}
+      		}
+      	}
+
+      	if(eType != "click"){
+      		if(value.length < 1) {
+      			return;
+      		} else if(value.length < 2) {
+      			showMsg("C_I054", "부서 코드/명을 2자 이상");
+      			return;
+      		}
+      	}
+      	
+      	getGmDeptInfo(eType, value, arguments[5], arguments[6]);
+      }
+      
+      
+      /*
+  	 * ============================================================================ *
+  	 * 기능 : 학생조회(대학원생 통합) 병무 학생조회 팝업 * 인수 : 학번/성명, 학번 오브젝트 * 리턴 :
+  	 * "responseEtSearchStudentInfo/sno" 학번 "responseEtSearchStudentInfo/snoNm"
+  	 * 학생성명 * 파라미터 : etEntrStdSearch(textObj, nameObj, 학적상태, 정원내외구분)
+  	 * ============================================================================
+  	 */
+      function etEntrStdSearch(e, textObj, nameObj) {
+      	gmSearchTypeFlag = "form";
+      	gmTextObjID = textObj.getID();
+      	gmNameObjID = nameObj.getID();
+      	
+      	nameObj.setValue("");
+      	var value = textObj.getValue();
+      	textObj.setValue("");
+      	
+      	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudentInfo" );
+      	
+      	if(e.type != 'click') {
+      		if(value.length < 1) {
+      			return;
+      		} else if(value.length < 2) {
+      			showMsg("C_I054", "학생검색 학번/성명을 2자 이상");
+      			return;
+      		}
+      	} 
+      	getEtEntrStdInfo(e.type, value, arguments[3], arguments[4], arguments[5]);
+      }    
+      
+      /*
+  	 * ============================================================================ *
+  	 * 기능 : 학생조회(대학원생 통합) 조회 팝업 * 인수 : value * 리턴 :
+  	 * ============================================================================
+  	 */
+      function getEtEntrStdInfo(type,value) {
+      	var encodeValue = "";
+      	var encodeScrgStatCd = "";
+      	var encodeFxinoDvCd = "";
+      	var bmGb ="";
+      	var deptCd = "";
+      	 
+      	if(arguments[2] != undefined) {  //년도
+      		setValue("requestEtSearchStudent/resdYear", arguments[2]);
+      		encodeResdYear = WebSquare.text.BASE64URLEncoder(arguments[2]);
+      	}
+      	
+      	if(value != "") {
+      		encodeValue = WebSquare.text.BASE64URLEncoder(value);
+      	} 
+      	
+      	if(type == "click") {
+     		if(typeof setNavigator != 'function') {
+   			openNewPopup( "setEtEntrStdPopupValue", "/views/et/ks/ET_KS_0000.xml", {width: 900, height:540}, {pExmtNo:encodeValue, pEmexYear:encodeResdYear});
+   			return;
+   		}
+      		openPopup( "setEtEntrStdPopupValue", "/views/et/ks/ET_KS_0000.xml", {width: 900, height:540}, {pExmtNo:encodeValue, pEmexYear:encodeResdYear});
+      		return;
+      	}
+          setValue("requestEtSearchStudent/stdmNm", value);
+          setValue("requestEtSearchStudent/resdYear", arguments[2]);
+          
+          execSubmission("sub", "requestEtSearchStudent", "responseEtSearchStudent", "/ks/listEntrStdInfo.do");
+          
+          var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseEtSearchStudent/object/entrStudentList/object");
+          
+          var rowCount = dataArr.length;
+          if(rowCount == 1) {
+        	setEtEntrStdPopupValue(WebSquare.ModelUtil.findInstanceNode( "responseEtSearchStudent/object/entrStudentList/object" ));
+          } else if(rowCount > 1) {
+	   	   	WebSquare.ModelUtil.removeChildNodes( "responseEtSearchStudent" );
+	   	   	if(typeof setNavigator != 'function') {
+	   			openNewPopup( "setEtEntrStdPopupValue", "/views/et/ks/ET_KS_0000.xml", {width: 900, height:540}, {pExmtNo:encodeValue, pEmexYear:encodeResdYear});
+	   			return;
+	   		}
+	   	   	openPopup( "setEtEntrStdPopupValue", "/views/et/ks/ET_KS_0000.xml", {width: 900, height:540},{pExmtNo:encodeValue, pEmexYear:encodeResdYear});
+          } else if(rowCount == 0) {
+          	showMsg("C_I041", "학생조회 학번/학생명으로 검색한 결과");
+          }
+      }   
+      
+      
+      /*
+  	 * ============================================================================ *
+  	 * 기능 : 학생조회(대학원생통합) 팝업 후에 호출됨 * 인수 : arrResult * 리턴 :
+  	 * ============================================================================
+  	 */
+      function setEtEntrStdPopupValue(resultNodes) {
+      	   if(resultNodes == undefined) {
+      	   	return;
+      	   }
+      	   WebSquare.ModelUtil.setInstanceNode( resultNodes, "responseEtSearchStudent", null , "replace" );
+      	   WebSquare.ModelUtil.copyChildrenNodes( "responseEtSearchStudent/object" , "responseEtSearchStudent", "replaceAll");
+      	   
+      	  
+      	      var arrResult = new Array();
+        	  arrResult.push( getValue("responseEtSearchStudent/sno"));        
+    	      arrResult.push( getValue("responseEtSearchStudent/studNm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/studNmEnm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/dpmjNm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/mjorNm"));
+    	      arrResult.push( "1");
+    	      arrResult.push( getValue("responseEtSearchStudent/studIidno"));
+    	      arrResult.push( getValue("responseEtSearchStudent/sexDvnm"));
+    	      arrResult.push( getValue("responseEtSearchStudent/sexDvcd"));
+    	      arrResult.push( getValue("responseEtSearchStudent/studCchPrfsEno"));
+      	
+      	   
+      	       
+      	   if(gmSearchTypeFlag == "form") {
+          	eval(gmTextObjID).setValue( getValue("responseEtSearchStudent/sno") );
+          	eval(gmNameObjID).setValue( getValue("responseEtSearchStudent/studNm") );
+          	
+             	// 화면에서 부가정보를 사용할 경우에 gmDeptSearchFormCallBack 함수를 만들어 놓고 사용한다
+             	if (typeof etEntrStdSearchFormCallBack == 'function') {
+             		etEntrStdSearchFormCallBack(arrResult);
+             	}
+             	return;
+          }
+    
+      }
+      
+      
+      /**
+       * grid의 특정 컬럼 필터링
+       * @param obj : gridObj, 컬럼명or컬럼인덱스,필터링값,exactMatch (true : 전체일치, false: 부분일치)
+       */
+      function setGridFilter(gridObj,colIdx,textVal,exactMatch, searchObj){
+          var rowIndex = gridObj.getMatchedIndex(colIdx, textVal,  exactMatch || false, 0, gridObj.getRowCount());
+          if(rowIndex.length < 1){
+              showMsg("C_I041","찾는 값");
+              return;
+          }
+          rowIndex.sort(sortSet);
+          
+          var tFocusedRowIndex = gridObj.getFocusedRowIndex();
+          var focusRowIndex = rowIndex[0];
+          for(var i = 0 ; i < rowIndex.length; i++ ){
+              //alert("rowindex : " + rowIndex[i]);
+              if (tFocusedRowIndex == rowIndex[i]){
+                  focusRowIndex =  parseInt(i+1) >= rowIndex.length ? rowIndex[0] : rowIndex[parseInt(i+1)]
+                  break;
+              };
+          }
+          
+          
+          gridObj.setFocusedCell(focusRowIndex, colIdx, false);
+          
+          if(!(searchObj == 'undefined' || searchObj == null)) {
+          	
+          }
+          
+          setTimeout( function(){searchObj.focus()}, 500);
+          
+          
+  	        
+       }
+      
+      
+      function sortSet(a,b){
+     
+         return parseInt(a-b);
+     
+      }
+      
+      /*
+       * ============================================================================ *
+       * 기능 : ncs대/중/소/세 분류 팝업 * 인수 : value * 리턴 :
+       * ============================================================================
+       */
+       function stNcsCode(grid , row , col,subMissionId) {            
+             gmSearchGridRow = row;
+             gmSearchGridCol = col;
+             gmSearchGridObjID = grid.getID();
+             //var value = grid.getCellData(row, col);
+             //grid.setCellData( row , col+2 , "" );             
+             //grid.setCellData( row , col , "" );
+             WebSquare.ModelUtil.removeChildNodes( "responseGmSearchNcsInfo" );
+             openPopup( "setStCuNcsPopupValue", "/views/st/cu/ST_CU_4021.xml", {width: 900, height:540});
+       
+       }
+    
+       /*============================================================================
+        ** 기능  : ncs분류 조회 팝업 후에 수행됨
+        ** 인수  : arrResult
+        ** 리턴  : 
+        ============================================================================*/
+       
+       function setStCuNcsPopupValue(row){                
+           if(row == undefined) {
+               return;
+            }
+           setValue("responseGmSearchNcsInfo/LNm", row.LNm);
+           setValue("responseGmSearchNcsInfo/LCd", row.LCd);
+           setValue("responseGmSearchNcsInfo/MNm", row.MNm);
+           setValue("responseGmSearchNcsInfo/MCd", row.MCd);
+           setValue("responseGmSearchNcsInfo/SNm", row.SNm);
+           setValue("responseGmSearchNcsInfo/SCd", row.SCd);
+           setValue("responseGmSearchNcsInfo/SLNm",row.SLNm);
+           setValue("responseGmSearchNcsInfo/SLCd",row.SLCd);
+           if (typeof stNcsCodeCallBack == 'function') {
+            stNcsCodeCallBack(gmSearchGridRow, gmSearchGridCol, getValue("responseGmSearchNcsInfo/LNm"), getValue("responseGmSearchNcsInfo/LCd"),
+                              getValue("responseGmSearchNcsInfo/MNm"), getValue("responseGmSearchNcsInfo/MCd"), getValue("responseGmSearchNcsInfo/SNm"), getValue("responseGmSearchNcsInfo/SCd")
+                            , getValue("responseGmSearchNcsInfo/SLNm"), getValue("responseGmSearchNcsInfo/SLCd"));
+                            
+           }
+    }
+       

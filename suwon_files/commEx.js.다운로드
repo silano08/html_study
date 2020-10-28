@@ -1,0 +1,480 @@
+/**
+ * @target
+ */
+    /*===============================================================
+     ** 기능 : 입시 report 조회
+     ** 인수 : SubmissionId : submission Id
+     *        ref    : submission reference
+     *        target : submission target
+     *        repositoryid : repository Id
+     *        sync : submission 의 synchronous 여부 (true(null)/false)
+     *               - false 일때 processMessage 보여짐.. true일때는 오류 남..
+     *        gubun : 1건의 data를 가져올경우 'single' , 여러건(grid)의 data를 가져올경우 생략
+     ** 결과 :  
+     **===============================================================*/
+    function listExReport(subId,ref,target,repositoryId,sync,gubun){
+    	WebSquare.ModelUtil.removeChildNodes( target );
+    	
+    	setValue(ref+"/id",repositoryId);
+    	if(gubun && gubun == "single"){
+    		//단건조회
+    		execSubmission(subId, ref, target,"/exCm/selectOneExReport.do",sync);
+    	}else{
+    		//여러건조회
+    		execSubmission(subId, ref, target,"/exCm/listExReport.do",sync);
+    	}
+    }
+    
+    /*===============================================================
+     ** 기능 : 입시 년도 콤보박스 
+     ** 인수 : selectBoxObj    : selectBox 객체
+     *        gubun : 입시기본년도(bas),원서접수년도(rece)
+     *        gridNode : grid내의 년도에 복사 대상 node
+     ** 결과 : resExYear/object/listExYear/object/enexYearCd
+     *         resExYear/object/listExYear/object/enexYearNm
+     *  grid 년도- nodeSet  : 복사대상node/listExYear/object
+     *             label    : enexYearNm
+     *             value    : enexYearCd 
+     **===============================================================*/
+    function getExYear(gubun,selectBoxObj,gridNode){
+    	var repositoryId;
+    	var nodePath = "resExYear/object/listExYear/object";
+    	
+    	if(gubun && gubun == "rece"){
+    		//원서접수년도
+    		repositoryId = "listApltReceEnexYear";
+    	}else if(gubun && gubun == "bas"){
+    		//입시기본년도
+    		repositoryId = "listIdBasEnexYear";
+    	}
+    	
+    	setValue("reqExYear/id",repositoryId);
+    	
+    	execSubmission("getCommonDataSubm", "reqExYear", "resExYear","/exCm/listExYear.do");
+    	
+    	if(selectBoxObj){
+    		
+	    	var nodes = WebSquare.ModelUtil.findInstanceNodes(nodePath);
+	        eval(selectBoxObj).removeAll(true);
+	        
+	        for(var i=1; i<=nodes.length; i++) {
+	        	var value = getValue(nodePath + "[" + i + "]/enexYearCd");
+	        	var lable = getValue(nodePath + "[" + i + "]/enexYearNm");
+	        	eval(selectBoxObj).addItem(value,lable);
+	        }
+	        eval(selectBoxObj).setSelectedIndex(0);
+    	}
+    	
+    	if(gridNode){
+    		// 년도 node 복사
+    		WebSquare.ModelUtil.copyNode("resExYear/object/listExYear" , gridNode);
+    	}
+    }
+    
+    /*===============================================================
+     ** 기능 : 1건일경우 학생정보 반환, 2건이상일경우 popup호출
+     ** 인수 : searchObj - 조회정보 관련 object
+     *      , fname     - callback함수명
+     *      , popupYn   - popup 강제 호출 여부(true/false) 
+     *                    default false : 강제호출이 아닐경우 생략가능.
+     ** 결과 : studInfo
+     **===============================================================*/
+//    searchObj.basYn;         -- 입시기본 여부(Y 입시,N 원서접수)
+//    searchObj.enexYear;      -- 입시년도
+//    searchObj.smrCd;         -- 학기코드
+//    searchObj.orgGroupCd;    -- 조직그룹코드
+//    searchObj.dpmjMjorCd;    -- 학과전공코드
+//    searchObj.enexRcritDvcd  -- 입시모집구분코드
+//    searchObj.enexCorsDvcd;  -- 입시과정구분코드
+//    searchObj.receStatCd;    -- 접수상태코드
+//    searchObj.receDvcd;      -- 접수구분코드
+//    searchObj.schValue;      -- 접수번호OR수험번호/성명
+    function exIdStudInfoPopup(searchObj,fname,popupYn){
+ 	   WebSquare.ModelUtil.removeInstanceNode( "reqExStudInfo" );
+ 	   WebSquare.ModelUtil.removeInstanceNode( "resExStudInfo" );
+ 	  
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/basYn",         searchObj.basYn );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/enexYear",      searchObj.enexYear );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/smrCd",         searchObj.smrCd );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/orgGroupCd",    "" );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/dpmjMjorCd",    "" );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/enexRcritDvcd", "" );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/enexCorsDvcd",  "" );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/receStatCd",    "" );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/receDvcd",      "" );
+ 	   WebSquare.ModelUtil.setInstanceValue( "reqExStudInfo/schValue",      searchObj.schValue );
+ 	   
+ 	   var url = "/exCm/";
+ 	   url += searchObj.basYn == "Y" ? "listIdBasStud.do" : "listApltReceStud.do";
+ 	   
+ 	   
+ 	   execSubmission("getCommonDataSubm", "reqExStudInfo", "resExStudInfo",url);
+ 	   
+ 	   var rowCount = getReqRowCount("getCommonDataSubm");
+ 	   if(!popupYn){
+ 	      if(searchObj.schValue.length < 2){
+ 	    	  showMsg("C_I046");
+ 	    	  return null;
+ 	      } 
+ 		  if( rowCount == 1){
+ 	 		   // 1건일경우    		   
+ 	 		   return getThesJudgInfo("getCommonDataSubm",fname);;
+ 	 	   }else{
+ 	 		   // 여러건일경우 popup호출 
+ 	 		   if(searchObj.orgGroupCd != undefined){
+ 	 		      return onExStudPopup2(searchObj,fname);
+ 	 		   }else{
+ 	 			  return onExStudPopup2(searchObj,fname);
+ 	 		   }
+ 	 	   }
+ 	   }else{
+ 		  if(searchObj.orgGroupCd != undefined){
+ 		     return onExStudPopup2(searchObj,fname);
+ 		  }else{
+ 			 return onExStudPopup2(searchObj,fname);
+ 		  }
+ 	   }
+ 	   
+        
+        return null;
+    }
+    
+    function onExStudPopup(searchObj,fname){
+    	openPopup("setStudPopupGaValue", "/views/usw/ex/id/EX_ID_2025.xml"
+                , { width      : 1020
+                  , height     : 450
+                  , resizable  : false
+                  , scrollbars : false }
+                , { pBasYn         : WebSquare.text.BASE64URLEncoder(searchObj.basYn)
+                  , pEnexYear      : WebSquare.text.BASE64URLEncoder(searchObj.enexYear)
+                  , pSmrCd         : WebSquare.text.BASE64URLEncoder(searchObj.smrCd)
+                  , pOrgGroupCd    : WebSquare.text.BASE64URLEncoder(searchObj.orgGroupCd)    
+                  , pDpmjMjorCd    : WebSquare.text.BASE64URLEncoder(searchObj.dpmjMjorCd)   
+                  , pEnexRcritDvcd : WebSquare.text.BASE64URLEncoder(searchObj.enexRcritDvcd)    
+                  , pEnexCorsDvcd  : WebSquare.text.BASE64URLEncoder(searchObj.enexCorsDvcd)
+                  , pReceStatCd    : WebSquare.text.BASE64URLEncoder(searchObj.receStatCd)
+                  , pReceDvcd      : WebSquare.text.BASE64URLEncoder(searchObj.receDvcd)
+                  , pValue         : WebSquare.text.BASE64URLEncoder(searchObj.schValue) }) ;
+    }
+
+    function onExStudPopup2(searchObj,fname){
+    	openPopup("setStudPopupGaValue", "/views/usw/ex/id/EX_ID_2025.xml"
+                , { width      : 1020
+                  , height     : 450
+                  , resizable  : false
+                  , scrollbars : false }
+                , { pBasYn         : WebSquare.text.BASE64URLEncoder(searchObj.basYn)
+                  , pEnexYear      : WebSquare.text.BASE64URLEncoder(searchObj.enexYear)
+                  , pSmrCd         : WebSquare.text.BASE64URLEncoder(searchObj.smrCd)
+                  , pValue         : WebSquare.text.BASE64URLEncoder(searchObj.schValue) }) ;
+    }
+    
+    /*===============================================================
+     ** 기능 : 원서접수기간에 해당하는 대학원 콤보박스 설정.
+     ** 인수 : selectObj - selectBox Objet
+     ** 결과 : 
+     **===============================================================*/
+    function schdOrgGroupCombo(selectObj, schdDvcd){
+    	setValue("tempReq/temp","");
+    	setValue("tempReq/schdDvcd",schdDvcd);
+    	var nodePath = "resSchdCombo/object/schdOrgGroupList/object";
+    	
+    	execSubmission("getCommonDataSubm", "tempReq", "resSchdCombo","/exCm/listSchdOrgGroupCombo.do");
+    	
+    	if(selectObj){
+    		
+	    	var nodes = WebSquare.ModelUtil.findInstanceNodes(nodePath);
+	        eval(selectObj).removeAll(true);
+	        
+	        for(var i=1; i<=nodes.length; i++) {
+	        	var value = getValue(nodePath + "[" + i + "]/orgGroupCd");
+	        	var lable = getValue(nodePath + "[" + i + "]/orgGroupNm");
+	        	eval(selectObj).addItem(value,lable);
+	        }
+	        eval(selectObj).setSelectedIndex(0);
+    	}
+    }
+    
+    /*===============================================================
+     ** 기능 : 원서접수기간에 해당하는 대학원 별 모집구분 콤보
+     ** 인수 : selectObj - selectBox Objet
+     *        searchOrgGroupCd - 대학원 코드
+     ** 결과 : 
+     **===============================================================*/
+    function schdRcritCombo(selectObj,searchOrgGroupCd){
+    	setValue("reqSchdRcit/orgGroupCd",searchOrgGroupCd);
+    	var nodePath = "resSchdRcritCombo/object/schdRcritList/object";
+    	
+    	execSubmission("getCommonDataSubm", "reqSchdRcit", "resSchdRcritCombo","/exCm/listSchdRcritCombo.do");
+    	
+    	if(selectObj){
+    		
+	    	var nodes = WebSquare.ModelUtil.findInstanceNodes(nodePath);
+	        eval(selectObj).removeAll(true);
+	        
+	        for(var i=1; i<=nodes.length; i++) {
+	        	var value = getValue(nodePath + "[" + i + "]/enexRcritDvcd");
+	        	var lable = getValue(nodePath + "[" + i + "]/enexRcritDvnm");
+	        	eval(selectObj).addItem(value,lable);
+	        }
+	        eval(selectObj).setSelectedIndex(0);
+    	}
+    }
+
+    /*===============================================================
+     ** 기능 : 원서접수기간에 해당하는 대학원 별 웹접수가 가능한 학과 콤보
+     ** 인수 : selectObj - selectBox Objet  
+     *       searchOrgGroupCd - 대학원 코드
+     *       searchRcritCd - 모집구분 코드
+     *       webReceYn - 웹접수 여부
+     ** 결과 : 
+     **===============================================================*/
+    function schdDpmjMjorCombo(vEnexYear, vSmrCd, selectObj, searchOrgGroupCd, searchRcritCd, webReceYn){
+        setValue("reqSchdDpmjMjor/enexYear", vEnexYear);
+    	setValue("reqSchdDpmjMjor/smrCd", vSmrCd);
+    	setValue("reqSchdDpmjMjor/orgGroupCd", searchOrgGroupCd);
+    	setValue("reqSchdDpmjMjor/enexRcritDvcd", searchRcritCd);
+    	setValue("reqSchdDpmjMjor/webReceDvcd", webReceYn);
+    	
+    	var nodePath = "resSchdDpmjMjorCombo/object/schdDpmjMjorList/object";
+    	
+    	execSubmission("getCommonDataSubm", "reqSchdDpmjMjor", "resSchdDpmjMjorCombo","/exCm/listSchdDpmjMjorCombo.do");
+    	
+    	if(selectObj){
+    		
+	    	var nodes = WebSquare.ModelUtil.findInstanceNodes(nodePath);
+	        eval(selectObj).removeAll(true);
+	        
+	        for(var i=1; i<=nodes.length; i++) {
+	        	var value = getValue(nodePath + "[" + i + "]/dpmjMjorCd");
+	        	var lable = getValue(nodePath + "[" + i + "]/dpmjMjorNm");
+	        	eval(selectObj).addItem(value,lable);
+	        }
+	        eval(selectObj).setSelectedIndex(0);
+    	}
+    }
+    
+    
+    /**************************************************************************
+     * function    : openSchoolPopup
+     * Description : 학교 팝업 오픈
+     * Parameter   : null
+     * Return      : null
+     **************************************************************************/
+     function openSchoolPopupEx(callBackFn,sculClsDvcd, zoneDvcd, sculNm, ref){
+         openPopup(callBackFn
+                 , "/views/cm/PG_CM_0007.xml"
+                 , {width: 900}
+                 , {   sculClsDvcd : WebSquare.text.BASE64URLEncoder(sculClsDvcd)
+                     , zoneDvcd    : WebSquare.text.BASE64URLEncoder(zoneDvcd)
+                     , sculNm      : WebSquare.text.BASE64URLEncoder(sculNm)
+                     , ref         : WebSquare.text.BASE64URLEncoder(ref) }) ;
+        
+     }
+     
+     /*============================================================================
+      ** 기능  : 주민번호 체크 
+      ** 인수 : 13자리 숫자만 입력
+      ** 결과  : 
+      ============================================================================*/    
+     function chkExJuminNo(juminNo){
+      	  if(juminNo=="" || juminNo==null) {
+      		showMsg("C_I054", "주민등록번호");
+ 		    return false;
+ 		  }
+      	  if(juminNo.length!=13) {
+      		  showMsg("C_I042", "13자리");
+      		  return false;
+      	  }
+      	  
+ 		  var jumin1 = juminNo.substr(0,6);
+ 		  var jumin2 = juminNo.substr(6,7);
+ 		  var yy     = jumin1.substr(0,2);        // 년도
+ 		  var mm     = jumin1.substr(2,2);        // 월
+ 		  var dd     = jumin1.substr(4,2);        // 일
+ 		  var genda  = jumin2.substr(0,1);        // 성별
+ 		  var msg, ss, cc;
+ 		  // 숫자가 아닌 것을 입력한 경우
+ 		  if (!isNumeric(jumin1)) {
+ 			  showMsg("C_I042", "앞자리");
+ 		    return false;
+ 		  }
+ 		  
+ 		  // 길이가 6이 아닌 경우
+ 		  if (jumin1.length != 6) {
+ 		    showMsg("C_I040", "주민등록번호 앞자리");
+ 		    return false;
+ 		  }
+ 		  
+ 		  // 첫번째 자료에서 연월일(YYMMDD) 형식 중 기본 구성 검사
+ 		  if (yy < "00" 
+ 		      || yy > "99" 
+ 		      || mm < "01" 
+ 		      || mm > "12" 
+ 		      || dd < "01" 
+ 		      || dd > "31") {
+ 			  showMsg("C_I040", "주민등록번호 앞자리");
+ 		    return false;
+ 		  }
+ 		  
+ 		  // 숫자가 아닌 것을 입력한 경우
+ 		  if (!isNumeric(jumin2)) {
+ 			  showMsg("C_I042", "뒷자리");
+ 		    return false;
+ 		  }
+ 		  // 길이가 7이 아닌 경우
+ 		  if (jumin2.length != 7) {
+ 			  showMsg("C_I040", "주민등록번호 뒷자리");
+ 		    return false;
+ 		  }
+ 		  //외국인은 7번째자리가 5이상
+// 		  // 성별부분이 1 ~ 4 가 아닌 경우
+// 		  if (genda < "1" || genda > "4") {
+// 			  showMsg("C_I040", "주민등록번호 뒷자리");
+// 		    return false;
+// 		  }
+ 		 
+ 		  // 연도 계산 - 1 또는 2: 1900년대, 3 또는 4: 2000년대
+ 		  cc = (genda == "1" || genda == "2") ? "19" : "20";
+ 		  // 첫번째 자료에서 연월일(YYMMDD) 형식 중 날짜 형식 검사
+ 		  if (isValidDate(cc+yy+mm+dd) == false) {
+ 			  showMsg("C_I040", "주민등록번호 앞자리");
+ 		    return false;
+ 		  }
+ 		  return true;
+ 		}
+     
+     /*===============================================================
+      ** 기능 : 년도/학기별 학사일정
+      ** 인수 : year,smrCd,orgGroupCd,enexRcritDvcd(입시모집구분코드),schdDvcd(일정구분코드)
+      *  schdYn           Y or N
+      *  enexSdtm         YYYY-MM-DD HH24:MI:SS
+      *  enexEdtm         YYYY-MM-DD HH24:MI:SS
+      *  allDd            YYYY-MM-DD ~ YYYY-MM-DD
+      *  allDt            YYYY-MM-DD HH24:MI:SS ~ YYYY-MM-DD HH24:MI:SS
+      **===============================================================*/
+      function getExSchd(year,smrCd,orgGroupCd,enexRcritDvcd,schdDvcd){
+           var obj = new Object();
+          
+           WebSquare.ModelUtil.setInstanceValue( "reqExSchdParam/year"         , year );
+	       WebSquare.ModelUtil.setInstanceValue( "reqExSchdParam/smrCd"        , smrCd );
+	       WebSquare.ModelUtil.setInstanceValue( "reqExSchdParam/orgGroupCd"   , orgGroupCd );
+	       WebSquare.ModelUtil.setInstanceValue( "reqExSchdParam/enexRcritDvcd"  , enexRcritDvcd );
+	       WebSquare.ModelUtil.setInstanceValue( "reqExSchdParam/schdDvcd"       , schdDvcd );
+	       
+	       
+	       execSubmission("getCommonDataSubm", "reqExSchdParam", "resExSchd","/exCm/selectExSchd.do");
+	       
+	       obj.schdYn   =  WebSquare.ModelUtil.getInstanceValue("resExSchd/object/exSchd/schdYn");
+	       obj.enexSdtm =  WebSquare.ModelUtil.getInstanceValue("resExSchd/object/exSchd/enexSdtm");
+	       obj.enexEdtm =  WebSquare.ModelUtil.getInstanceValue("resExSchd/object/exSchd/enexEdtm");
+	       obj.allDd    =  WebSquare.ModelUtil.getInstanceValue("resExSchd/object/exSchd/allDd");
+	       obj.allDt    =  WebSquare.ModelUtil.getInstanceValue("resExSchd/object/exSchd/allDt");
+	       obj.todayDt  =  WebSquare.ModelUtil.getInstanceValue("resExSchd/object/exSchd/todayDt");
+	       
+	       return obj;
+      }
+      
+      /*===============================================================
+      ** 기능 : 고지서 출력 전 체크
+      ** 인수 : year,smrCd,exmtNo(수험번호)
+      **===============================================================*/
+      function chkExToftPrint(year, smrCd, exmtNo,orgGroupCd,enexRcritDvcd){
+    	  var subId = "getCommonDataSubm";
+    	  
+    	  WebSquare.ModelUtil.setInstanceValue( "reqChk1/regYear"  , year);
+          WebSquare.ModelUtil.setInstanceValue( "reqChk1/regSmrCd" , smrCd);
+          WebSquare.ModelUtil.setInstanceValue( "reqChk1/exmtNo"   , exmtNo);
+          
+          //등록금기본 생성 차수 리턴 (등록금 납부기간 체크 및 등록금기본 생성유무체크)
+          execSubmission(subId, "reqChk1", "resChk2","/idTutnBas/selectIdTutnBasRegSeqChk.do");
+          var vRegSeqYn = WebSquare.ModelUtil.getInstanceValue("resChk2/object/regSeqYn");
+          
+          //등록금 납부기간 입력여부 체크 (차수별)
+          if(vRegSeqYn == "1"){
+        	  schdAppl = getExSchd(year,smrCd,orgGroupCd,enexRcritDvcd,"31"); //1차 예치금 납부기간 체크
+              if( (schdAppl.enexSdtm == "") || (schdAppl.enexEdtm == "") ){
+            	    showMsg("C_I180"); //등록금고지서를 출력할 수 없습니다.
+                    return;
+               }
+          }else if(vRegSeqYn == "2"){
+        	  schdAppl = getExSchd(year,smrCd,orgGroupCd,enexRcritDvcd,"32"); //2차 등록금 납부 기간 체크
+              if( (schdAppl.enexSdtm == "") || (schdAppl.enexEdtm == "") ){
+            	  showMsg("C_I180"); //등록금고지서를 출력할 수 없습니다.
+                    return;
+               }
+          }else if(vRegSeqYn == "3"){
+        	  schdAppl = getExSchd(year,smrCd,orgGroupCd,enexRcritDvcd,"33"); //3차 등록금 납부 기간 체크
+              if( (schdAppl.enexSdtm == "") || (schdAppl.enexEdtm == "") ){
+            	  showMsg("C_I180"); //등록금고지서를 출력할 수 없습니다.
+                    return;
+               }
+          }
+          
+    	  //등록금 대상자 여부 ( Y:대상자, N:미대상자 (입시기본 불합격자 이거나 등록금 대상자가 아닌경우))
+          execSubmission(subId, "reqChk1", "resChk1","/idTutnBas/selectIdTutnBasDrBasYn.do");
+          var vDrBasYn = WebSquare.ModelUtil.getInstanceValue("resChk1/object/drBasYn");
+          if(vDrBasYn != "Y"){
+                showMsg("C_I183"); //합격자만 등록금고지서를 출력 할 수 있습니다.
+                return;
+          }
+          
+          //등록금기본 생성 유무 체크
+          if(vRegSeqYn == ""){
+                showMsg("C_I180"); //등록금고지서를 출력할 수 없습니다.
+                return;
+          }
+          
+          //가상계좌 생성 유무 체크
+          WebSquare.ModelUtil.setInstanceValue( "reqVacnt/vacntUseSno", exmtNo );
+          execSubmission(subId, "reqVacnt", "resChk3","/vacntAlot/selectVacntAlotExChk.do");
+          var vVacntYn = WebSquare.ModelUtil.getInstanceValue("resChk3/object/vacntYn");
+          if(vVacntYn != "Y"){
+                showMsg("C_I041", ["가상계좌"]); //C_I041={0}이(가) 없습니다.
+                return;
+          }
+          
+          WebSquare.ModelUtil.setInstanceValue( "reqChk2/recvYear"  , year);
+          WebSquare.ModelUtil.setInstanceValue( "reqChk2/recvSmrCd" , smrCd);
+          WebSquare.ModelUtil.setInstanceValue( "reqChk2/exmtNo"    , exmtNo );
+                          
+          //등록금 납부여부 ( Y:수납, N:미납)
+          execSubmission(subId, "reqChk2", "resChk4","/idTutnDtai/selectIdTutnDtaiDrDtaiYn.do");
+          var vDrDtaiYn = WebSquare.ModelUtil.getInstanceValue("resChk4/object/drDtaiYn");
+          if(vDrDtaiYn != "N"){
+                showMsg("C_I041", ["납부할 등록금"]); //C_I041={0}이(가) 없습니다.
+                return;
+          }
+           
+          //예치금 수납유무 ( Y:수납, N:미납)
+          execSubmission(subId, "reqChk2", "resChk5","/idTutnDtai/selectIdTutnDtaiRegSeq1.do");
+          if(vRegSeqYn != "3"){
+              var vLssnf1 = WebSquare.ModelUtil.getInstanceValue("resChk5/object/regSeqYn");
+          }else{
+              var vLssnf1 = "Y";
+          }
+          
+          var params = new Array();
+          params.push(year);
+          params.push(smrCd);
+          params.push(exmtNo);
+          
+          
+          WebSquare.ModelUtil.setInstanceValue( "reqChk9/enexYear"  , year);
+          WebSquare.ModelUtil.setInstanceValue( "reqChk9/smrCd" , smrCd);
+          WebSquare.ModelUtil.setInstanceValue( "reqChk9/exmtNo"   , exmtNo);
+          execSubmission(subId, "reqChk9", "resFxino","/idBas/listIdBas.do");
+          var fxinoDvcd = getValue("resFxino/object/idBasList/object/fxinoDvcd");
+          
+          if(vLssnf1 == "N"){ //예치금
+              openReport("ex/id/EX_ID_4090_10r", "", "EX_ID_4090_10r", "수원대학교", params, null, null, null, false);
+          }else if(vLssnf1 == "Y"){ //입학금+수업료
+              if(fxinoDvcd == "14"){ //외국인
+                  openReport("ex/id/EX_ID_4090_20r", "", "EX_ID_4090_20r", "수원대학교", params, null, null, null, false);
+              }else{ //내국인
+                  openReport("ex/id/EX_ID_4090_30r", "", "EX_ID_4090_30r", "수원대학교", params, null, null, null, false);
+              }
+          }
+          
+          return true;
+      }

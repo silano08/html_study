@@ -1,0 +1,3122 @@
+/**
+
+ * @target
+ * 김창일
+ */
+
+var comm_js= {}; //This is WebSquare JavaScript Marker. Do not remove this line.
+var arrCodeId        = new Array();
+var arrObjId         = new Array(); 
+var selectTargetNode = "";
+    /*===============================================================
+    ** 기능 : 로그를 출력
+    ** 인수 : msg - 로그에 나타낼 문자열
+    ** 결과 : 로그창에 문자열이 출력됨
+    **===============================================================*/
+    function logger(msg) {
+        WebSquare.logger.printLog( msg );
+    }
+
+    /*===============================================================
+    ** 기능 : Instancenode에 값을 설정
+    ** 인수 : node - 노드, val - 값
+    ** 결과 : 노드에 값을 설정
+    **===============================================================*/
+    function setValue(node, val) {
+        //setAttribute(node, "value", val);
+        WebSquare.ModelUtil.setInstanceValue( node , val);
+    }
+  
+    /*===============================================================
+    ** 기능 : Instancenode에 값을 return
+    ** 인수 : node - 노드
+    ** 결과 : 노드의 값을 return
+    **===============================================================*/
+    function getValue(node) {
+        return WebSquare.ModelUtil.getInstanceValue(node);
+    }
+
+    /*===============================================================
+    ** 기능 : Validation Check
+    ** 그룹안의 각 컴포넌트에 대해 validation check
+    ** 컴포넌트의 속성에 hname을 추가 (validation check중 에러 발생시 hname이 출력됨)
+    ** 인수 : obj - 그룹명
+    ** 결과 : boolean
+    **===============================================================*/
+    function chkValid(obj) {
+        var rtn = true;
+        if(obj == undefined || obj == null) {
+            showMsg("C_I039");
+            return false;
+        }
+        var o = eval(obj);
+
+        var childArr = o.getChildren();
+        var objPlugin = "";
+        
+        for(var i in childArr) {
+            var t = childArr[i].getPluginName();
+            objPlugin = t;
+            var comp = WebSquare.util.getComponentById(childArr[i].id);
+            if(t == "input") {
+                if(comp.hasClass("se_input_E") || comp.hasClass("if_input_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "selectbox") {
+                if(comp.hasClass("se_combo_E") || comp.hasClass("if_combo_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "inputCalendar") {
+                if(comp.hasClass("se_cal_E") || comp.hasClass("if_cal_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "spinner") {
+                if(comp.hasClass("se_spin_E") || comp.hasClass("if_spin_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "radio") {
+                if(comp.hasClass("se_radio_E") || comp.hasClass("if_radio_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "checkbox") {
+                if(comp.hasClass("se_check_E") || comp.hasClass("if_check_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "textarea") {
+                if(comp.hasClass("se_txtArea_E") || comp.hasClass("if_txtArea_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "autoComplete") {
+                if(comp.hasClass("se_autoComp_E") || comp.hasClass("if_autoComp_E")) {
+                    if(comp.getValue() == "" || comp.getValue() == null) {
+                    	comp.setStyle( "border-color" , "#FF0000" );
+                        rtn = rtn && false;
+                    } else {
+                    	comp.setStyle( "border-color" , "" );
+                    }
+                }
+            } else if(t == "group") {
+            	rtn = rtn && chkValid(comp);
+            }
+        }
+        if(!rtn && objPlugin != "group") showMsg("C_I008");
+        return rtn; 
+    }
+
+    /*===============================================================
+     ** 기능 : chkValid에서 설정된 border-color 스타일을 해제
+     ** 인수 : 
+     ** 결과 : 
+     **===============================================================*/
+    function clearChkStyle(obj) {
+        var o = eval(obj);
+        var childArr = o.getChildren();
+        for(var i in childArr) {
+            var t = childArr[i].getPluginName();
+            var comp = WebSquare.util.getComponentById(childArr[i].id);
+            if(t == "input" || t == "selectbox") {
+            	if(comp.getStyle( "border-color") == "#ff0000") {
+            		comp.setStyle( "border-color" , "" );
+            	}
+            }             
+            else if(t == "group") {
+            	clearChkStyle(comp);
+            }
+        }
+    }
+    
+    /*===============================================================
+    ** 기능 : InstanceNode를 return
+    ** 인수 : node - node 문자열
+    ** 결과 : node에 해당하는 노드를 return
+    **===============================================================*/
+    function getInstanceNode(node) {
+        return WebSquare.ModelUtil.findInstanceNode(node);
+    }
+
+    /*===============================================================
+    ** 기능 : srcNode에 해당하는 node에 descNode를 추가
+    ** 인수 : srcNode(문자열), descNode(문자열)
+    ** 결과 : srcNode에 descNode를 추가
+    **===============================================================*/
+    function appendChild(srcNode, descNode) {
+        WebSquare.xml.appendChild( getInstanceNode(srcNode), WebSquare.xml.findNode(WebSquare.xml.parse("<"  + descNode + "/>"), descNode));
+    }
+
+    /*===============================================================
+    ** 기능 : srcNode에 해당하는 node에 descNode를 추가
+    ** 인수 : srcNode(문자열), descNode(문자열), value
+    ** 결과 : srcNode에 desc를 추가하고 추가한  desc 노드에 value값을 설정
+    **===============================================================*/
+    function appendChildValue(srcNode, descNode, val) {
+        WebSquare.xml.appendChild( getInstanceNode(srcNode), WebSquare.xml.findNode(WebSquare.xml.parse("<"  + descNode + "/>"), descNode));
+        setValue(srcNode + "/" + descNode, val);
+    }
+
+    /*===============================================================
+    ** 기능 : node의 Attribute를 return
+    ** 인수 : node - 노드명, attr - 속성명
+    ** 결과 : 노드의 속성값을 return
+    **===============================================================*/
+    function getAttribute(node, attr) {
+        return WebSquare.xml.getAttribute(getInstanceNode(node), attr);
+    }
+
+    /*===============================================================
+    ** 기능 : node의 Attribute를 set
+    ** 인수 : node - 노드명, attr - 속성명, value
+    ** 결과 : 노드의 속성에 값을 설정
+    **===============================================================*/
+    function setAttribute(node, attr, val) {
+        WebSquare.xml.setAttribute(getInstanceNode(node), attr , val);
+    }
+
+    /*===============================================================
+    ** 기능 : 우측의 공백제거
+    ** 인수 : sValue : 입력값
+    ** 결과 : 문자열
+    **===============================================================*/
+    function trim(sValue)
+    {
+        if (sValue == null) return "";
+        if (new String(sValue).valueOf() == "undefined") return "";
+        if (new String(sValue) == null) return "";
+
+        var retVal = (new String(sValue)).replace(/^\s+|\s+$/g, '');
+
+        return retVal;
+    }
+
+    /*============================================================================
+    ** 기능  : Parameter 값 String 으로 전환
+    ** 인수 :  params : String으로 전환할  Parameter
+    ** 결과  : String Parameter
+    **============================================================================*/
+    function makeParamString( params ) {
+        var array = [];
+        var paramString = "";
+
+        for( obj in params ) {
+            array.push(obj + "=" + params[obj]);
+        }
+
+        paramString = '?' + array.join('&');
+
+        return paramString;
+    }
+
+    /*============================================================================
+    ** 기능  : WebSquare URL 얻기
+    ** 인수 : url : url , params : url parameter, target :
+    ** 결과  : url
+    ============================================================================*/
+
+    function getWebsquareUrl( url, params, target ) {
+        if( !target ) target = window;
+
+        if( target && target.location ) {
+            // create object
+            defaultParams = {};
+
+            // set websquare core param
+            defaultParams['w2xPath'] = WebSquare.core.getURL(url);
+            //defaultParams['w2xHome'] = '/';
+            //defaultParams['w2xDocumentRoot'] = '/';
+            //extend user parameter
+            params = WebSquare.extend(defaultParams, params);
+
+            var paramString = makeParamString(params);
+
+            var new_url = target.location.href.replace(/\?.*/, paramString);
+            
+            return new_url;
+        } else {
+            return "";
+        }
+    }
+
+    /*===============================================================
+     ** 기능 : Modal 팝업 호출
+     ** 인수 : url : 팝업url, (optional)options : 팝업 옵션, (optional)params : 팝업에 넘겨줄 params, target :
+     ** 결과 :
+     *  Exemple	: fn_comm_OpenModalPopup( "/sample/SamplePop.xml"        (absolute)
+     *						   		, {  width      : 640           (popup options)
+     *							  	   , height     : 430
+     *							  	   , resizable  : false
+     *								   , scrollbars : false }
+     *						   		, {  PARAM_CD   : "TEST_PARAM1"  (url parameter)
+     *						      	   , PARAM_NM   : "TEST_PARAM2"
+     *						   		});
+     * url, (optional)options, (optional)params, (optional)target
+     **===============================================================*/
+    
+    function openPopup(url, options, params, target) {
+    	if(url.indexOf("/") < 0) {
+    		openPopup2(url, options, params, target);
+    	} else {
+	        options = WebSquare.extend( {
+	            width  : 500,
+	            height : 500,
+	            resizable  : true,
+	            scrollbars : false
+	        }, options);
+	        
+	        var new_url = url;
+	        
+	        if( url.match(/\.xml$/) ) {
+	            new_url = getWebsquareUrl( url, params, target );
+	        }
+	        
+	        options.resizable  = (options.resizable  == true) ? "yes" : "no";
+	        options.scrollbars = (options.scrollbars == true) ? "yes" : "no";
+	
+	        var strOptions = "dialogWidth:" + parseInt(options.width) + "px; dialogHeight:" + parseInt(options.height)+"px";
+	
+	        popProperty = strOptions + "; status:no; resizable:" + options.resizable+"; scroll:" + options.scrollbars + "; center:yes; help:no";
+	        var popupWin = window.showModalDialog(new_url, self, popProperty);
+	        return popupWin; // returnValue.
+    	}
+    }
+
+    function openPopup2(fname, url, options, params, target) {
+    	var strParam = ""; 
+    	if(params != "undefined" || params != "") {
+	    	for(var names in params)
+	    		strParam += "&" + names + "=" + eval("params." + names);
+    	}
+    	var strHeight  = (options.height == undefined? 500 : options.height);
+    	var strWidth = (options.width == undefined? 500 : options.width);
+    	
+    	if(options == null || options == 'undefined') {
+	    	options = WebSquare.extend( {
+	            width  : strWidth,
+	            height : strHeight,
+	            resizable  : true,
+	            scrollbars : false
+	        }, options);
+    	}
+    	
+    	var bUseIFrame;
+    	
+    	var strScrollTop  = ($.browser.msie && parseInt($.browser.version) <= 8 ) ? document.body.parentNode.scrollTop : window.pageYOffset;
+    	var strScrollLeft = ($.browser.msie && parseInt($.browser.version) <= 8 ) ? document.body.parentNode.scrollLeft : window.pageXOffset;
+    	
+    	var strLeft;
+    	var strTop;
+    	
+    	if(isMobile()) {
+    		bUseIFrame = false;
+    		strLeft = (parent.contFrame.getSize("width")/2) - ((parseInt(strWidth)/2)) + parseInt(strScrollLeft);
+        	strTop  = (parent.contFrame.getSize("height")/2) - ((parseInt(strHeight)/2))  + parseInt(strScrollTop);
+    	}
+    	else { 
+    		bUseIFrame = true;
+    		strLeft = (parent.windowContainer1.getSize("width")/2) - ((parseInt(strWidth)/2)) + parseInt(strScrollLeft);
+        	strTop  = (parent.windowContainer1.getSize("height")/2) - ((parseInt(strHeight)/2))  + parseInt(strScrollTop);
+    	}
+    	
+    	
+    	
+        WebSquare.uiplugin.popup.openPopup(url + "&fname=" + fname + strParam, {
+            id : "npop2",
+            type : "window",
+            width: strWidth,
+            height: strHeight,
+            left:strLeft,
+            top:strTop,
+            popupName : " ", //popupName popup 객체의 이름으로 popup 프레임의 표시줄에 나타납니다.
+            modal : true, //modal을 이용해서 뒤 쪽 배경을 동작하지 않도록 만들기 위한 인자 입니다. false이면 뒤쪽의 컴퍼넌트가 사용 가능합니다.
+            useIFrame : bUseIFrame,
+            style : "", //popup의 스타일을 지정합니다. 값이 있으면 left top width height는 적용되지 않습니다.
+            resizable : false,
+            status : false,
+            menubar : false,
+            scrollbars : false,
+            title : true,
+            xml: "", // popup에 넘길 xmlDocument의 string popup창에서 WebSquare.uiplugin.popup.getPopupParam() api를 사용하여 가져올수 있습니다.
+            srcData: "", //popup 객체의 type 이 window 일 때 Parent 에서 넘길 xpath
+            destData: "", //popup 객체의 type 이 window 일 때 popup 에 설정할 xpath
+            popupUrl : "suwonpopup.html"
+        });
+        
+        
+        //if(isMobile()) {
+	        $("#npop2_iframe").load(function(){
+	        	if(window.npop2_iframe == undefined) {
+	        		return;
+	        	} 
+	        	
+	        	var bodyObject;
+	        	var obj = window.npop2_iframe;
+	        	var childObj = obj.contentDocument;
+	        	if(childObj) bodyObject = childObj.getElementsByTagName("body")[0];
+	        	else bodyObject = window.npop2_iframe.document.getElementsByTagName("body")[0];
+	        	
+	            //var bodyObject = window.npop2_iframe.contentDocument.getElementsByTagName("body")[0];
+	            var parentObj = opener || parent;
+	            if(bodyObject.addEventListener) {
+	             window.npop2_iframe.addEventListener("click", parentObj.initTime);
+	             window.npop2_iframe.addEventListener("keydown", parentObj.initTime);
+	            } else {
+	             window.npop2_iframe.attachEvent("onclick", parentObj.initTime);
+	             window.npop2_iframe.attachEvent("onkeydown", parentObj.initTime);
+	            }
+	        });
+        //}
+        
+	}
+
+    
+    function openNewPopup(fname, url, options, params, target) {
+    	var strParam = ""; 
+    	if(params != "undefined" || params != "") {
+	    	for(var names in params)
+	    		strParam += "&" + names + "=" + eval("params." + names);
+    	}
+    	
+    	var strHeight  = (options.height == undefined? 500 : options.height);
+    	var strWidth = (options.width == undefined? 500 : options.width);
+    	
+    	if(options == null || options == 'undefined') {
+	    	options = WebSquare.extend( {
+	            width  : strWidth,
+	            height : strHeight,
+	            resizable  : true,
+	            scrollbars : false
+	        }, options);
+    	}
+    	
+    	
+        WebSquare.uiplugin.popup.openPopup(url + "&fname=" + fname + strParam, {
+            id : "npopchild",
+            type : "window",
+            width: strWidth,
+            height: strHeight,
+            popupName : "", //popupName popup 객체의 이름으로 popup 프레임의 표시줄에 나타납니다.
+            modal : true, //modal을 이용해서 뒤 쪽 배경을 동작하지 않도록 만들기 위한 인자 입니다. false이면 뒤쪽의 컴퍼넌트가 사용 가능합니다.
+            useIFrame : false,
+            style : "", //popup의 스타일을 지정합니다. 값이 있으면 left top width height는 적용되지 않습니다.
+            resizable : false,
+            status : false,
+            menubar : false,
+            scrollbars : false,
+            title : true,
+            xml: "", // popup에 넘길 xmlDocument의 string popup창에서 WebSquare.uiplugin.popup.getPopupParam() api를 사용하여 가져올수 있습니다.
+            srcData: "", //popup 객체의 type 이 window 일 때 Parent 에서 넘길 xpath
+            destData: "", //popup 객체의 type 이 window 일 때 popup 에 설정할 xpath
+            popupUrl : "suwonpopup.html"
+        });
+        
+    }
+    
+        function openNewPopup2(fname, url, options, params, target) {
+        	var strParam = ""; 
+        	if(params != "undefined" || params != "") {
+    	    	for(var names in params)
+    	    		strParam += "&" + names + "=" + eval("params." + names);
+        	}
+        	
+        	var strHeight  = (options.height == undefined? 500 : options.height);
+        	var strWidth = (options.width == undefined? 500 : options.width);
+        	
+        	if(options == null || options == 'undefined') {
+    	    	options = WebSquare.extend( {
+    	            width  : strWidth,
+    	            height : strHeight,
+    	            resizable  : true,
+    	            scrollbars : false
+    	        }, options);
+        	}
+        	        	
+            WebSquare.uiplugin.popup.openPopup(url + "&fname=" + fname + strParam, {
+                id : "npopchild2",
+                type : "window",
+                width: strWidth,
+                height: strHeight,
+                popupName : "", //popupName popup 객체의 이름으로 popup 프레임의 표시줄에 나타납니다.
+                modal : true, //modal을 이용해서 뒤 쪽 배경을 동작하지 않도록 만들기 위한 인자 입니다. false이면 뒤쪽의 컴퍼넌트가 사용 가능합니다.
+                useIFrame : false,
+                style : "", //popup의 스타일을 지정합니다. 값이 있으면 left top width height는 적용되지 않습니다.
+                resizable : false,
+                status : false,
+                menubar : false,
+                scrollbars : false,
+                title : true,
+                xml: "", // popup에 넘길 xmlDocument의 string popup창에서 WebSquare.uiplugin.popup.getPopupParam() api를 사용하여 가져올수 있습니다.
+                srcData: "", //popup 객체의 type 이 window 일 때 Parent 에서 넘길 xpath
+                destData: "", //popup 객체의 type 이 window 일 때 popup 에 설정할 xpath
+                popupUrl : "suwonpopup.html"
+            });
+       }
+    
+ 
+
+    function arrayToQueryString(arr, parameterName) {
+        if (arr == null || !jQuery.isArray(arr)) {
+            return "";
+        }
+
+        var queryString = "";
+        for (var i = 0; i < arr.length; i++) {
+            queryString += "&" + parameterName + "=" + arr[i];
+        }
+        return queryString;
+    }
+
+    function escapeJavascript(target) {
+        return target.replace(/\(/gi, "<").replace(/\)/gi, ">");
+    }
+    
+    /*============================================================================
+     ** 기능  : 메시지 박스 보여주기
+     ** 인수 : msgId : 메시지ID, param : 메시지 인수 , compId : 확인 선택시 포커스를 이동시킬 컴포넌트ID
+     ** 결과  : url
+     ============================================================================*/
+    function showMsg(msgId, param, compId) {
+        var msgDivCd = msgId.substr(2, 1);
+        var msg = "";
+        if(param == 'undefined' || param == null) {
+        	msg = eval(msgId);
+        }
+        else if(param instanceof Array) {
+    		msgId = msgId + "(";
+    		var str = "'" + param[0] + "'";
+    		for(var i=1; i<param.length; i++) {
+    			str = str + ",'" + param[i] + "'";
+    		}
+        		msg = eval(msgId + str + ")");
+        	} 
+        
+        else {
+        	msg = eval(msgId+"('" + param + "')");
+        }
+        if(msgDivCd == "I") {
+        	jAlert(msg, "Information", function(r) {
+        		if(compId != undefined)
+        			compId.focus();
+            });
+        } else if(msgDivCd == "E") {
+        	
+        	jError(msg, "Error", function(r) {
+        		if(compId != undefined)
+        			compId.focus();
+            });
+        }
+
+    }
+    
+    function showMsgFuncExec(msgId, param, funcName) {
+        var msgDivCd = msgId.substr(2, 1);
+        var msg = "";
+        if(param == 'undefined' || param == null) {
+        	msg = eval(msgId);
+        }
+        else if(param instanceof Array) {
+    		msgId = msgId + "(";
+    		var str = "'" + param[0] + "'";
+    		for(var i=1; i<param.length; i++) {
+    			str = str + ",'" + param[i] + "'";
+    		}
+        		msg = eval(msgId + str + ")");
+        	} 
+         
+        else {
+        	msg = eval(msgId+"('" + param + "')");
+        }
+        if(msgDivCd == "I") {
+        	
+        	jAlert(msg, "Information", function(r) {
+        		if (r) 
+                    eval(funcName);
+            });
+        } else if(msgDivCd == "E") {
+        	
+        	jError(msg, "Error", function(r) {
+        		if (r) 
+                    eval(funcName);
+            });
+        }
+    }
+    
+    function showMsgString(msg) {
+    	jAlert(msg, "Information", function(r) {
+        });
+    }
+    
+    /*============================================================================
+     ** 기능  : Confirm 창 보여주기
+     ** 인수 : url : url , params : url parameter, target :
+     ** 결과  : url
+     ============================================================================*/
+    function showConfirm(msgId, funcName, param) {
+        var msg = "";
+        if(param == undefined) msg = eval(msgId);
+        else if(param instanceof Array) {
+    		msgId = msgId + "(";
+    		var str = "'" + param[0] + "'";
+    		for(var i=1; i<param.length; i++) {
+    			str = str + ",'" + param[i] + "'";
+    		}
+    		msg = eval(msgId + str + ")");
+    	} else {
+    		msg = eval(msgId+"('" + param + "')");
+    	}
+        
+    	jConfirm(msg, 'Question', function(r) {
+                if (r) 
+                  eval(funcName);
+            }
+        );
+    }
+    
+    /*============================================================================
+     ** 기능  : Confirm 창 보여주기(확인 버튼 클릭시 funcName을 실행 취소 버튼 클릭시 funcName1을 실행)
+     ** 인수 : url : url , params : url parameter, target :
+     ** 결과  : 확인 true, 취소 false 
+     ============================================================================*/
+    function showConfirm1(msgId,funcName, funcName1, param) {
+        var msg = "";
+        if(param == undefined) msg = eval(msgId);
+        else if(param instanceof Array) {
+    		msgId = msgId + "(";
+    		var str = "'" + param[0] + "'";
+    		for(var i=1; i<param.length; i++) {
+    			str = str + ",'" + param[i] + "'";
+    		}
+    		msg = eval(msgId + str + ")");
+    	} else {
+    		msg = eval(msgId+"('" + param + "')");
+    	}
+    	jConfirm(msg, 'Question', function(r) {
+                if (r) eval(funcName);
+                else eval(funcName1);
+            }
+        );
+    }
+
+    /*============================================================================
+     ** 기능  : Prompt 창 보여주기
+     ** 인수 : url : url , params : url parameter, target :
+     ** 결과  : url
+     ============================================================================*/
+    function showPrompt(msgId, funcName, initVal, param) {
+        var msg = "";
+        if(param == undefined) msg = eval(msgId);
+        else if(param instanceof Array) {
+    		msgId = msgId + "(";
+    		var str = "'" + param[0] + "'";
+    		for(var i=1; i<param.length; i++) {
+    			str = str + ",'" + param[i] + "'";
+    		}
+    		msg = eval(msgId + str + ")");
+    	} else {
+    		msg = eval(msgId+"('" + param + "')");
+    	}
+        
+        jPrompt(msg, initVal, 'Prompt', function(r) {
+        	if (r) 
+                eval(funcName + "('" +r+"')");
+            }
+        );
+    }
+    
+    /*============================================================================
+     ** 기능  : 상태바 메시지 변경
+     ** 인수 : msg : 상태바에 보여질 메시지 내용
+     ** 결과  :
+     ============================================================================*/
+    function statusMsg(msgId, param, rowCount) {
+    	if(msgId == "" || msgId == null) return;
+        var msg = "";
+        if(param == undefined) msg = eval(msgId);
+        else msg = eval(msgId+"('" + param + "')");
+        
+        if(rowCount != undefined) msg = msg + "(" + rowCount + "건)";
+        
+        try{
+           window.parent.windowContainer1.setWindowStatusMsg( msg );
+        }catch(e){
+           return;
+        }
+    }
+
+    /*============================================================================
+     ** 기능  : submission 실행 후 처리
+     ** 인수 : sm : 실행된 submission id
+     ** 결과  : callBack(sub.action) 호출
+     *        sub.action으로 해당 submission 구분
+     ============================================================================*/
+    function submitDone(sub) {
+    	//var sub = WebSquare.ModelUtil.getSubmission( sm );
+        var sMsgcd = WebSquare.ModelUtil.getInstanceValue( sub.target + "/object/errorCode" );
+        if (parseInt(sMsgcd) == -998) {
+        	location.href = "/websquare/websquare.jsp?w2xPath=/views/loginRequired.xml";
+        	return;
+        } else if(parseInt(sMsgcd) == 10) {
+        	showMsgString(WebSquare.ModelUtil.getInstanceValue( sub.target + "/object/errorMessage"));
+        	return;
+        }
+        if (sMsgcd.trim() != "") {
+        	var sMsg = WebSquare.ModelUtil.getInstanceValue( sub.target + "/object/errorMessage" );
+        	
+        	//showMsg("C_I044" , sMsg);
+        	alert("요청하신 작업중 오류가 발생하였습니다. \n오류메시지 : " + sMsg);
+            return;
+        }
+        var rowCount  = 0;
+        var strCodeId = "";
+        if (sub.action.toLowerCase().indexOf("list") >= 0) {
+            var tagName = "";
+            var doc = WebSquare.ModelUtil.findInstanceNode( sub.target );
+            var dataArr = WebSquare.xml.getChildren(doc, "object");
+            for (var i in dataArr) {
+                if (dataArr[i]["type"] == "array") {
+                   tagName = dataArr[i]["@tagName"];
+                   break;
+                }
+            }
+            var dataArr = WebSquare.ModelUtil.findInstanceNodes( sub.target + "/object/" + tagName + "/object" );
+            rowCount = dataArr.length;
+            strCodeId = "C_I001";
+        } else if (sub.action.toLowerCase().indexOf("insert") >= 0) {
+        	/*
+            showMsg("C_I002");
+            try{
+            	statusMsg("C_I002");
+            }catch(e){
+            	logger("popup");
+            }
+            */
+        	strCodeId = "C_I002";
+        } else if (sub.action.toLowerCase().indexOf("update") >= 0) {
+        	strCodeId = "C_I003";
+        } else if (sub.action.toLowerCase().indexOf("save") >= 0)  {
+        	strCodeId = "C_I004";
+        } else if (sub.action.toLowerCase().indexOf("delete") >= 0) {
+        	strCodeId = "C_I005";
+        } else if (sub.action.toLowerCase().indexOf("apply") >= 0) {
+        	strCodeId = "C_I017";
+        } else if (sub.action.toLowerCase().indexOf("cancel") >= 0) {
+        	strCodeId = "C_I043";
+        } else if (sub.action.toLowerCase().indexOf("merge") >= 0 ||
+    		   sub.action.toLowerCase().indexOf("multi") >= 0) {
+        	strCodeId = "C_I032";
+        } else if (sub.action.toLowerCase().indexOf("copy") >= 0) {
+        	strCodeId = "C_I087";
+        } else if (sub.action.toLowerCase().indexOf("send") >= 0) {
+        	strCodeId = "C_I157";
+        }
+        if(strCodeId != "C_I001") {
+        	showMsg(strCodeId);
+        }
+        try{        	
+        	if (strCodeId == "C_I001") {
+        		statusMsg(strCodeId, null, rowCount);	
+        	} else {
+        	    statusMsg(strCodeId);
+            }
+        }catch(e){
+        	logger("popup");
+        }
+
+        try{
+            callBack(sub.action, rowCount);
+        }catch(e){
+        	return;
+        }
+    }
+    
+    /*============================================================================
+     ** 기능  : 그룹 안의 컴포넌트들의 값을 공백으로 변경(현재 input, selectbox, textarea만 해당, 필요시 컴포넌트를 추가)
+     ** 인수 : 그룹ID
+     ** 결과  : 그룹 안의 컴포넌트들의 값을 공백으로 변경
+     ============================================================================*/
+    function clearGrp(object, bOutput){
+        var childArr = object.getChildren();
+        for(var index in childArr ){
+            var obj = childArr[index];
+            var pluginType = obj.getPluginName().toLowerCase();
+            if (pluginType == "group") {
+            	clearGrp(obj, bOutput);
+            } else if( pluginType == "input"
+               || pluginType == "inputcalendar"
+               || pluginType == "textarea"
+               ) {
+                obj.setValue("");
+            } else if (pluginType == "selectbox") {
+            	obj.setSelectedIndex( 0 );
+            } else if (pluginType == "upload" || pluginType == "checkbox") {
+            	obj.reset();
+            } else if (pluginType == "output") {
+            	if(bOutput == true) {
+            		obj.setValue("");
+            		obj.setLabel("");
+            	}
+            }
+        }
+    }
+    
+    /*============================================================================
+     ** 기능  : 그리드내의 입력 Cell Color 변경
+     ** 인수 : Grid id
+     ** 결과  : 그리드내의 입력 Cell Color #FFFF80 으로 변경
+     ============================================================================*/
+    function gridCellColor(object){
+      	if (object.getRowCount() > 0 ) {
+          for (var i=0;i<object.getTotalCol();i++) {
+        	  if (object.getColumnReadOnly(i)) {
+        		  continue;
+        	  } else {
+        		  if (object.getColumnType( i ) == "text" || object.getColumnType( i ) == "select" || 
+        			  object.getColumnType( i ) == "calendar" || object.getColumnType( i ) == "textarea" || 
+        			  object.getColumnType( i ) == "checkbox"  ) {
+                      object.setColumnBackgroundColor(i, "#FFFCD7" );
+        		  }
+              }
+          }
+        }
+    }
+    
+    /*============================================================================
+     ** 기능  : 그리드내에 새로운 행 추가
+     ** 인수 : Grid id, 필수 입력 컬럼 인덱스또는 id
+     ** 결과  : 그리드내의 입력 Cell 필수 항목 이미지  변경
+     ============================================================================*/
+    function gridNewRow() {
+        var object   = arguments[0];
+    	
+    	var row = object.insertRow(object.getRowCount());
+    	
+    	if (object.getRowCount() == 1) { gridCellColor(object); }
+    	for ( var i = 1 ; i < arguments.length ; i++ ) {
+    		object.setCellStyle(row , arguments[i], "background", "" );
+    		if (object.getColumnType( arguments[i] ) == "select") {
+    			object.setCellStyle(row , arguments[i], "background-position", "right center" );
+    			object.setCellStyle(row , arguments[i], "background", "url(/images/form/select_arrow1.gif)" );
+    		} else if(object.getColumnType( arguments[i] ) == "checkbox") {
+    			
+    		}
+    		  else {
+    		   object.setCellStyle(row , arguments[i], "background-position", "right top" );
+    		   object.setCellStyle(row , arguments[i], "background", "url(/images/form/m_ic_essin.png)" );
+    	    }
+    		
+    		object.setCellStyle(row , arguments[i], "background-repeat", "no-repeat" );
+    		object.setCellBackgroundColor( row , arguments[i] , "#FFFCD6" );
+    		object.setCellReadOnly( row , arguments[i] , "false" );
+    		object.setCellDisabled( row , arguments[i] , "false" );
+    		//disabled 도 false
+    	}
+    	
+    	if (arguments.length > 1) {
+    	   object.setFocusedCell( row , arguments[1], false);
+        }
+    }    
+    
+    /*============================================================================
+     ** 기능  : 그리드 엑셀 업로드
+     ** 인수 : targetGrid, param(옵션, null 일경우 Default(options)로 처리)
+     ** 결과  : 그리드 엑셀 업로드
+     ============================================================================*/
+    function gridExcelUpload(targetGrid, param){		
+    	
+    	var options = {};
+    	options.headerExist      = "1"; 	 //헤더의 존재 여부 입니다.
+    	options.startRowIndex    = "0";      //excel파일에서 gird의 데이터가 시작되 row의 index입니다..(헤더 포함)
+    	options.startColumnIndex = "0";      //excel파일에서 gird의 데이터가 시작되는 column의 index입니다.(헤더 포함)
+    	options.sheetNo          =  0;       //excel의 sheet번호입니다.
+    	options.append           = "0";      //append 여부입니다. 0이면 append하지 않고 새로 쓰고 1이면 그리드의 뒤쪽에 데이터를 추가로 붙여줍니다.
+    	options.hidden           = "1";      //1이면 그리드에서 엑셀 다운로드시에 hidden을 포함했다는 의미입니다. 즉 upload시에 그리드의 hidden Column에 값을 는다는 의미입니다.
+    	options.type             = "1";
+    	options.fillHidden       = "1";		 //1이면 히든채움
+    	options.footerExist		 = "0"; //풋터의 존재 여부 입니다.
+    	
+    	if (param == undefined) {
+    		targetGrid.advancedExcelUpload( options );
+    	
+    	} else {
+    		targetGrid.advancedExcelUpload( param );
+    	} 		
+    }
+    
+    /*============================================================================
+     ** 기능  : 그리드 엑셀 다운로드
+     ** 인수 : targetGrid, fileName(저장할 파일명-확장명 제외)
+     ** 결과  : 그리드 엑셀 다운로드
+     ============================================================================*/
+    function gridExcelDown(targetGrid, fileName, startRowIndex){
+    	/*
+    	var rowcount = targetGrid.getRowCount();
+    	if( rowcount == 0 ){
+    		fn_comm_msgBox("I", "0", "서식을 받을 데이타가 없습니다.<br\><br\>조회를 먼저 하십시오.");
+    		return;	
+    	}
+    	*/
+    	var f_name =  fileName + ".xls";
+        var options = {};
+        options.fileName         = f_name;   
+        options.type             = "1";
+        //options.foldColumns      = ["0","5"];
+        options.startRowIndex    = 0;
+        options.startColumnIndex = 0;
+        options.showProcess      = true;     //프로세스창이 안보이게 함.
+        options.headerColor      = "GREY_25_PERCENT";
+        options.startRowIndex    = startRowIndex;
+        //options.massStorage      = false;       //대용량 다운로드 여부 추가 (기본 값: true)
+        //options.removeColumns    = "0,1,2,3";   //컬럼 감추기   				
+    
+        targetGrid.advancedExcelDownload( options );
+    }
+    
+    /*============================================================================
+     ** 기능  : submission 실행
+     ** 인수 : id     : submission id
+     **      ref    : submission reference
+     **      target : submission target
+     **      action : submission action
+     **      sync   : submission 의 synchronous 여부 (true(null)/false)
+     *                - false 일때 processMessage 보여짐.. true일때는 오류 남..
+     ** 결과  : submission 실행
+     ============================================================================*/
+    function execSubmission(id, ref, target, action, sync){
+        var sub = WebSquare.ModelUtil.getSubmission( id );
+    	sub.ref = ref;
+        sub.target = target;
+        sub.action = action;
+        if (!sync) sub.processMsg = "처리중입니다.. 잠시만 기다려 주십시오!";
+        
+        if (sync == null || sync == true) {
+           sub.mode = "synchronous";
+        } else { 
+           sub.mode = "asynchronous";
+        }
+        WebSquare.ModelUtil.executeSubmission( id );
+    }
+    
+    /*============================================================================
+     ** 기능  : 공통코드 조회 후 selectbox에 적용
+     ** 인수 : selectbox id, target node, 공통코드 id, 정렬순서(컬럼), asc/desc, opt
+     ** 결과  : 
+     ============================================================================*/
+    function getSelectboxCmCode(selectboxId, targetNode, codeId, orderColumn, orderOpt, opt) {
+    	var objId = new Array();
+    	objId = selectboxId.split("^");
+    	
+    	var codId = new Array();
+    	codId = codeId.split("^");
+    	
+    	if(objId.length != codId.length) {
+    		showMsg("파라미터를 다시 확인하세요.");
+    		return;
+    	}
+    	
+    	var smObj = WebSquare.ModelUtil.getSubmission( "smCmCode" );
+    	smObj.target = targetNode;
+    	WebSquare.ModelUtil.executeSubmission("smCmCode");
+    	
+    	for(var i=1; i<=objId.length; i++) {
+  			eval(objId[i-1]).setNodeSet(targetNode +'/cmcdBasList/object[' + i + ']/cmcdSpcList/object','id','name');
+    	}
+    }
+    
+    //selectbox 코드 조회 완료 후
+    function getSelectBoxSpcResult() {
+    	var targetNode = selectTargetNode;
+    	var nodes = WebSquare.ModelUtil.findInstanceNodes( targetNode + "/object/selectboxCdSpcList/object");
+    	for(var i=0; i<arrObjId.length; i++) {
+    		for(var j=1; j<=nodes.length; j++) {
+    			if(arrCodeId[i] == getValue(targetNode + "/object/selectboxCdSpcList/object[" + j + "]/id")) {
+    				eval(arrObjId[i]).setNodeSet(targetNode +"/object/selectboxCdSpcList/object[" + j + "]/list/object","cdNm","cd");
+    			}
+    		}
+    	}
+    }
+    
+    function bindingUploadedFileInfo(bindingXpath, uploadedFileInfoXml) {
+	    var storedFilename = WebSquare.xml.getValue(uploadedFileInfoXml, "ret/storedFileList");
+	    var localFilename = WebSquare.xml.getValue(uploadedFileInfoXml, "ret/localfileList");
+	    var path = WebSquare.xml.getValue(uploadedFileInfoXml, "ret/key");
+        setValue(bindingXpath + "/fileNm", localFilename);
+        setValue(bindingXpath + "/tmpFullPathFileNm", path + "/" + storedFilename);
+        setValue(bindingXpath + "/newer", "true");
+    }
+    
+    function bindingUploadedFilesInfo(bindingXpath, uploadedFileInfoData) {
+        var doc = WebSquare.json.JSON2XML(uploadedFileInfoData);
+        var nodes = WebSquare.xml.findNodes(doc, "array/object");
+        var path = null;
+        var localFilename = null;
+        var storedFilename = null;
+        var fileBasNode = null;
+        
+        for (var i = 0; i < nodes.length; i++) {
+            path = WebSquare.xml.getTextNodeValue(WebSquare.xml.findNode(nodes[i], "key"));
+            localFilename = WebSquare.xml.getTextNodeValue(WebSquare.xml.findNode(nodes[i], "localFile"));
+            storedFilename = WebSquare.xml.getTextNodeValue(WebSquare.xml.findNode(nodes[i], "file"));
+            
+            fileBasNode = "<fileBas>"
+            	        + "    <fileNm>" + localFilename + "</fileNm>"
+            	        + "    <tmpFullPathFileNm>" + path + "/" + storedFilename + "</tmpFullPathFileNm>"
+            	        + "    <newer>true</newer>"
+            	        + "</fileBas>";
+            
+            WebSquare.ModelUtil.setInstanceNode(WebSquare.xml.parse(fileBasNode), bindingXpath, null, "append");
+        }
+        setAttribute(bindingXpath, "type", "array");
+    }
+    
+    function validationUploadFile(uploadedFileInfoXml) {
+    	var deniedFilename = WebSquare.xml.getValue(uploadedFileInfoXml, "ret/deniedList");
+    	if (deniedFilename != null && deniedFilename != "") {
+    		showMsg("C_I045", deniedFilename);
+    		return false;
+    	}
+    	return true;
+    }
+    
+    function validationUploadFiles(uploadedFileInfoData) {
+    	var doc = WebSquare.json.JSON2XML(uploadedFileInfoData);
+    	logger(WebSquare.xml.serialize(doc));
+    	var nodes = WebSquare.xml.findNodes(doc, "array/object");
+    	var filename = null;
+    	var deniedFilenames = "";
+    	
+    	for (var i = 0; i < nodes.length; i++) {
+    		filename = WebSquare.xml.getTextNodeValue(WebSquare.xml.findNode(nodes[i], "deniedFile"));
+    		if (filename != null && filename != "") {
+        		deniedFilenames += filename + ", ";
+    		}
+    	}
+    	
+    	if (deniedFilenames.length > 0) {
+    		deniedFilenames = deniedFilenames.substring(0, deniedFilenames.lastIndexOf(", "));
+    		showMsg("C_I045", deniedFilenames);
+    		return false;
+    		//return confirm("\"" + deniedFilenames + "\" 파일은 업로드할 수 없는 파일입니다.\n계속 진행하시겠습니까?");
+    	}
+    	return true;
+    }
+    
+    function downloadFile(fileSeq) {
+    	pFileSeq = Base64.encode(fileSeq);
+    	location.href = "/file/downloadFile.do?fileSeq=" + pFileSeq;
+    }
+    
+    //그룹안의 컴포넌트에 대해 enable, disable 처리 한다.
+    function disableGrp(object, bool, objArr) {
+        var childArr = object.getChildren();
+        for(var index in childArr ){
+            var obj = childArr[index];
+            var pluginType = obj.getPluginName().toLowerCase();
+            if (pluginType == "group") {
+            	disableGrp(obj, bool, objArr);
+            } else if(pluginType != "output" && pluginType != "textbox") {
+            	if(!checkArrayInData(objArr, obj.getID())) {
+	            	obj.setDisabled(bool);
+	            	obj.setReadOnly(bool);
+	            	if(bool) 
+	            		obj.setStyle( "background-color" , "#eeeeee" );
+	            	else 
+	            		obj.setStyle( "background-color" , "" );
+            	}
+            }
+        }
+    }
+    
+    //그룹안의 컴포넌트에 대해 enable, disable 처리 한다.
+    function readOnlyGrp(object, bool, objArr) {
+        var childArr = object.getChildren();
+        for(var index in childArr ){
+            var obj = childArr[index];
+            var pluginType = obj.getPluginName().toLowerCase();
+            if (pluginType == "group") {
+            	readOnlyGrp(obj, bool, objArr);
+            } else if(pluginType != "output" && pluginType != "textbox") {
+            	if(!checkArrayInData(objArr, obj.getID())) {
+	            	obj.setReadOnly(bool);
+	            	if(bool) 
+	            		obj.setStyle( "background-color" , "" );
+	            	else 
+	            		obj.setStyle( "background-color" , "" );
+            	}
+            }
+        }
+    }
+    
+    //배열안에 데이터 유무 체크
+    function checkArrayInData(arr, data) {
+    	if(arr == undefined) return false;
+    	var rtn = false;
+    	for(var i=0; i<arr.length; i++) {
+    		if(arr[i] == data) {
+    			rtn = true;
+    		}
+    	}
+    	return rtn;
+    }
+    
+    //코드값 조회 팝업
+    function codePopup(codeId, codeVal, codeValNm) {
+    	var returnValue = openPopup( "/views/cm/PG-CM-003.xml", {width: 800}, {codeId:codeId, codeVal:codeVal, codeValNm:codeValNm});
+    	return returnValue;
+    }
+    
+    /*============================================================================
+     ** 기능  : 트리에서 제일 상단 노드 추가 ( 레벨이 0인거)
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        colName: 배열, 트리에 표시되는 item명 value, label, depth , 필요한 column 순 
+     *        colValue : 배결, 트리의 item에 대한 값 순서는 colName과 동일
+     ** 결과  : 트리에 상단 노드 생성
+     ============================================================================*/
+    function treeNodeAppend(obj, treeNode, colName, colValue) {             
+        var insNode = treeInsertNodeStr(colName, colValue);
+        WebSquare.ModelUtil.setInstanceNode( insNode , treeNode , null , "append" );
+    }
+    
+    /*============================================================================
+     ** 기능  : 트리에 Root하위 Node 생성
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        colName: 배열, 트리에 표시되는 item명 value, label, depth , 필요한 column 순 
+     *        colValue : 배결, 트리의 item에 대한 값 순서는 colName과 동일
+     *        newGbn   : 1 - 신규(동등), 2 - 신규(하위)
+     ** 결과  : 트리에 노드 생성
+     ============================================================================*/
+    function treeSubNodeAppend(obj, treeNode, colName, colValue, newGbn) {
+        if (obj.getSelectedIndex() < 0) return;
+        var insDoc = treeInsertNodeStr(colName, colValue);
+        if (insDoc == null) return;
+        
+        if (newGbn == null) newGbn = "2";
+        
+        WebSquare.ModelUtil.removeChildNodes( "tempTreeList" );
+        
+        var rootNode = treeNode.substring(0,treeNode.indexOf("/"));
+        var subNode = treeNode.substring(treeNode.indexOf("/") + 1, treeNode.length);
+        
+        var tempTreeNode = "tempTreeList/" + treeNode.substring(treeNode.indexOf("/") + 1, treeNode.length);
+        
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes( treeNode + "/object" );
+        
+        var insRow;
+        
+        if (newGbn == "1") {
+            var parentValue = menuTree.getParentValue( obj.getSelectedValue() );
+        } else {
+           insRow = obj.getSelectedIndex() + treeChildCnt(obj, obj.getSelectedValue(), colName[0]) - 1;
+        }
+        
+        for (var i=0;i<dataArr.length;i++) {
+            if (newGbn == "1") {
+               if (WebSquare.ModelUtil.getInstanceValue(treeNode + "/object["+(i+1)+"]/" + colName[0]) == parentValue ) {
+                  insRow = i + treeChildCnt(obj, parentValue, colName[0]);
+               }
+            }
+            
+            var dataDoc =  WebSquare.ModelUtil.findInstanceNode( treeNode + "/object["+(i+1)+"]" );
+            WebSquare.ModelUtil.setInstanceNode( dataDoc , tempTreeNode , null, "append" );
+            if (i == insRow) {
+               WebSquare.ModelUtil.setInstanceNode( insDoc , tempTreeNode, null, "append" );
+            }
+        }
+        
+        WebSquare.ModelUtil.removeChildNodes( rootNode );
+        WebSquare.ModelUtil.copyNode( "tempTreeList/" + subNode.substring(0,subNode.indexOf("/")) , rootNode ); 
+   }
+    
+    /*============================================================================
+     ** 기능  : 트리에 추가할 컬럽과 컬럽값을 받아 Node 생성
+     ** 인수 :  colName: 배열, 트리에 표시되는 item명 value, label, depth , 필요한 column 순 
+     *        colValue : 배결, 트리의 item에 대한 값 순서는 colName과 동일
+     ** 결과  : 추가 할 노드
+     ============================================================================*/
+    function treeInsertNodeStr(colName, colValue) {
+        var insStr = "";
+        
+        if (colName.length == 0) return null;
+        
+        for ( var i = 0 ; i < colName.length ; i++ ) {
+           insStr += "<" + colName[i] + ">" + colValue[i] + "</" + colName[i] + ">";
+        }
+        
+        insStr = "<object type='object'>" + insStr + "</object>";
+        
+        var insNode = WebSquare.xml.parse( insStr );
+        
+        return insNode;
+     }
+    
+    /*============================================================================
+     ** 기능  : 트리의 해당 값을 가지고 있는 노드의 하위 노드의 갯수 계산
+     ** 인수 :  obj :트리id, 
+     *        value : 검색할 노드의 Value 값, 
+     *        valueCol: 검색할 노드의 Value Item명
+     ** 결과  : 노드의 하위 노드의 갯수
+     ============================================================================*/
+    function treeChildCnt(obj, value, valueCol) {
+        var childArr = obj.getChildData( value );
+        
+        var childCnt = childArr.length;                  
+        for (var i=0;i<childArr.length;i++) {
+            childCnt += treeChildCnt(obj, WebSquare.xml.getValue( childArr[i] , valueCol  ), valueCol);
+        }
+        
+        return childCnt;
+   }
+    
+    /*============================================================================
+     ** 기능  : 트리에 선택된 노드의 라벨 변경
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        colName: 배열, 트리에 표시되는 item명 value, label, depth 순 
+     *        renameData : 변경할 메뉴명
+     ** 결과  : 트리에 노드 라벨명 변경
+     ============================================================================*/
+    function treeLabelRename(obj, treeNode, colName, renameData) {
+        if (renameData.trim() == "" || renameData == null) return;
+        
+        var value = obj.getSelectedValue();
+        
+        WebSquare.ModelUtil.setInstanceValue( treeNode + "/object[" + colName[0] + "='"+obj.getSelectedValue()+"']/" + colName[1] , renameData );
+        
+        obj.findNode( value );
+     }
+    
+    /*============================================================================
+     ** 기능  : 트리에 선택된 노드를 삭제
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        colName: 검색할 Value의 item명 
+     ** 결과  : 트리에 노드 삭제
+     ============================================================================*/
+    function treeNodeRemove(obj, treeNode, colName) {
+        if (obj.getSelectedIndex() < 0) {return;}
+        
+        WebSquare.ModelUtil.removeChildNodes( "tempTreeList" );
+         
+        var rootNode = treeNode.substring(0,treeNode.indexOf("/"));
+        var subNode = treeNode.substring(treeNode.indexOf("/") + 1, treeNode.length);
+        
+        var tempTreeNode = "tempTreeList/" + subNode;
+       
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes( treeNode + "/object");
+        var startRow = obj.getSelectedIndex() - 1;
+        var endRow = startRow + treeChildCnt(obj, obj.getSelectedValue(), colName);
+        
+        for (var i=0;i<dataArr.length;i++) {    
+           if (i < startRow || i > endRow) {
+             var dataDoc =  WebSquare.ModelUtil.findInstanceNode( treeNode + "/object["+(i+1)+"]" );
+             WebSquare.ModelUtil.setInstanceNode( dataDoc , tempTreeNode , null, "append" );
+           }
+        } 
+         
+        WebSquare.ModelUtil.removeChildNodes( rootNode );
+        WebSquare.ModelUtil.copyNode( "tempTreeList/" + subNode.substring(0,subNode.indexOf("/")) , rootNode );
+    }
+    
+    /*============================================================================
+     ** 기능  : 트리의 드래그 드로그 처리
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        colName: 검색할 Value의 item명
+     *        dragnode : 드래그 노드 (트리의 onDrog 의 agument 값)
+     *        dropnode : 드로그 노드  (트리의 onDrog 의 agument 값)
+     ** 결과  : 트리에 노드 삭제
+     ============================================================================*/
+    function treeNodeMove(obj, treeNode, colName, dragnode, dropnode) {
+        var insStr = new Array();
+        var arrIdx = 0;
+        
+        obj.findNode( dragnode.value);
+        var startRow = obj.getSelectedIndex()+1;
+        var endRow = startRow + treeChildCnt(obj, obj.getSelectedValue(), colName[0]);
+        
+        var depth = eval(WebSquare.ModelUtil.getInstanceValue( treeNode + "/object[" + colName[0] + "='"+dropnode.value+"']/" + colName[2] )) + 1;
+        var dragDepth = WebSquare.ModelUtil.getInstanceValue( treeNode + "/object[" + colName[0] + "='"+dragnode.value+"']/" + colName[2] );
+        WebSquare.ModelUtil.setInstanceValue( treeNode + "/object[" + colName[0] + "='"+dragnode.value+"']/" + colName[2] , depth );
+        insStr[0] = WebSquare.ModelUtil.findSerializedNode( treeNode + "/object[" + colName[0] + "='"+dragnode.value+"']" );
+        
+        for (var i=startRow;i<endRow;i++) {
+            var subDepth = WebSquare.ModelUtil.getInstanceValue( treeNode + "/object[" + (i) +"]/" + colName[2] );
+            var depth1 =  eval(subDepth) - (eval(dragDepth) - eval(depth));
+            
+            WebSquare.ModelUtil.setInstanceValue( treeNode + "/object["+ (i) +"]/" + colName[2] , depth1 );                 
+        
+            arrIdx++;
+            insStr[arrIdx] = WebSquare.ModelUtil.findSerializedNode( treeNode + "/object["+(i)+"]" );
+        }
+        obj.findNode( dragnode.value);
+        treeNodeRemove(obj, treeNode, colName[0]);
+        
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes( treeNode + "/object" );
+        
+        var insRow;
+        for (var i=0;i<dataArr.length;i++) {
+            if (WebSquare.ModelUtil.getInstanceValue(treeNode + "/object["+(i+1)+"]/" + colName[0]) == dropnode.value ) {
+               insRow = i + treeChildCnt(obj, dropnode.value, colName[0]);
+               break;
+            }
+        }
+        
+        WebSquare.ModelUtil.removeChildNodes( "tempTreeList" );
+
+        var rootNode = treeNode.substring(0,treeNode.indexOf("/"));
+        var subNode = treeNode.substring(treeNode.indexOf("/") + 1, treeNode.length);
+        var tempTreeNode = "tempTreeList/" + subNode;
+        
+        for (var i=0;i<dataArr.length;i++) {
+            var dataDoc =  WebSquare.ModelUtil.findInstanceNode( treeNode + "/object["+(i+1)+"]" );
+            WebSquare.ModelUtil.setInstanceNode( dataDoc , tempTreeNode , null, "append" );
+            if (i == insRow) {
+               for (var j=0;j<insStr.length;j++) {
+                   var insDoc = WebSquare.xml.parse( insStr[j] );
+                   WebSquare.ModelUtil.setInstanceNode( insDoc , tempTreeNode, null, "append" );
+               }
+            }
+        }
+        
+        WebSquare.ModelUtil.removeChildNodes( rootNode );
+        
+        WebSquare.ModelUtil.copyNode( "tempTreeList/" + subNode.substring(0,subNode.indexOf("/")) , rootNode ); 
+        obj.findNode( dragnode.value);
+    }
+    
+    /*============================================================================
+     ** 기능  : 트리의 드래그 드로그 처리 ( 레벨이 1개일때 동일레벨로만 이동 처리 )
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        valueNm: 검색할 Value의 item명
+     *        dragnode : 드래그 노드 (트리의 onDrog 의 agument 값)
+     *        dropnode : 드로그 노드  (트리의 onDrog 의 agument 값)
+     ** 결과  : dropNode 위로 drapNode가 이동
+     ============================================================================*/
+    function treeNodeEqualMove(obj, treeNode, valueNm, dragnode, dropnode) {
+        var rootNode = treeNode.substring(0,treeNode.indexOf("/"));
+        var subNode = treeNode.substring(treeNode.indexOf("/") + 1, treeNode.length);
+        var tempTreeNode = "tempTreeList/" + subNode;
+        var insStr = WebSquare.ModelUtil.findSerializedNode( treeNode + "/object[" + valueNm + "='"+dragnode.value+"']" );
+    
+        obj.findNode( dragnode.value);
+        treeNodeRemove(obj, treeNode, valueNm);
+    
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes( treeNode + "/object" );
+    
+        var insRow;
+        for (var i=0;i<dataArr.length;i++) {
+            if (WebSquare.ModelUtil.getInstanceValue(treeNode + "/object["+(i+1)+"]/" + valueNm) == dropnode.value ) {
+               insRow = i;
+               break;
+            }
+        }
+
+        WebSquare.ModelUtil.removeChildNodes( "tempTreeList" );
+        for (var i=0;i<dataArr.length;i++) {
+            if (i == insRow) {
+               var insDoc = WebSquare.xml.parse( insStr );
+               WebSquare.ModelUtil.setInstanceNode( insDoc , tempTreeNode, null, "append" );
+            }
+            var dataDoc =  WebSquare.ModelUtil.findInstanceNode( treeNode + "/object["+(i+1)+"]" );
+            WebSquare.ModelUtil.setInstanceNode( dataDoc , tempTreeNode , null, "append" );
+        }
+    
+        WebSquare.ModelUtil.removeChildNodes( rootNode );
+    
+        WebSquare.ModelUtil.copyNode( "tempTreeList/" + subNode.substring(0,subNode.indexOf("/")) , rootNode ); 
+        obj.findNode( dragnode.value);
+    }
+    
+    
+    /*============================================================================
+     ** 기능  : 트리의 노드를 동등 레벨로만 이동
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        colName: 배열, 트리에 표시되는 item명 value, label, depth 순
+     *        upDownGbn : 위로 이동 아래로 이동 구분 (1 : 위로 이동, 2: 아래로 이동 )
+     ** 결과  : 동등 레벨로 이동
+     ============================================================================*/
+    function treeNodeEqualMove(obj, treeNode, colName, upDownGbn) {
+        var insStr = new Array();
+        var arrIdx = 0;
+
+        var dragValue = obj.getSelectedValue();
+        var dropValue = treeNodeAfterFindNode(obj, treeNode, colName, dragValue, upDownGbn);
+        
+        if (dropValue == "") return;
+
+        obj.findNode( dragValue);
+        var startRow = obj.getSelectedIndex()+1;
+        var endRow = startRow + treeChildCnt(obj, obj.getSelectedValue(), colName[0]);
+
+        var depth = eval(WebSquare.ModelUtil.getInstanceValue( treeNode + "/object[" + colName[0] + "='"+dropValue+"']/" + colName[2] ));
+        var dragDepth = WebSquare.ModelUtil.getInstanceValue( treeNode + "/object[" + colName[0] + "='"+dragValue+"']/" + colName[2] );
+        WebSquare.ModelUtil.setInstanceValue( treeNode + "/object[" + colName[0] + "='"+dragValue+"']/" + colName[2] , depth );
+        insStr[0] = WebSquare.ModelUtil.findSerializedNode( treeNode + "/object[" + colName[0] + "='"+dragValue+"']" );
+
+        for (var i=startRow;i<endRow;i++) {
+             var subDepth = WebSquare.ModelUtil.getInstanceValue( treeNode + "/object[" + (i) +"]/" + colName[2] );
+             var depth1 =  eval(subDepth) - (eval(dragDepth) - eval(depth));
+   
+             WebSquare.ModelUtil.setInstanceValue( treeNode + "/object["+ (i) +"]/" + colName[2] , depth1 );                 
+
+             arrIdx++;
+             insStr[arrIdx] = WebSquare.ModelUtil.findSerializedNode( treeNode + "/object["+(i)+"]" );
+        }
+        obj.findNode( dragValue);
+        treeNodeRemove(obj, treeNode, colName[0]);
+
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes( treeNode + "/object" );
+
+        var insRow;
+        
+        for (var i=0;i<dataArr.length;i++) {
+            if (WebSquare.ModelUtil.getInstanceValue(treeNode + "/object["+(i+1)+"]/" + colName[0]) == dropValue ) {
+               if (upDownGbn == "1") {
+                  insRow = i;
+               } else if (upDownGbn == "2") {
+                  insRow = i + treeChildCnt(obj, dropValue, colName[0]);
+               }
+               break;
+            }
+        }
+
+        WebSquare.ModelUtil.removeChildNodes( "tempTreeList" );
+
+        var rootNode = treeNode.substring(0,treeNode.indexOf("/"));
+        var subNode = treeNode.substring(treeNode.indexOf("/") + 1, treeNode.length);
+        var tempTreeNode = "tempTreeList/" + subNode;
+
+        for (var i=0;i<dataArr.length;i++) {
+             var dataDoc =  WebSquare.ModelUtil.findInstanceNode( treeNode + "/object["+(i+1)+"]" );
+             
+             if (upDownGbn == "1") {
+                if (i == insRow) {                      
+                   for (var j=0;j<insStr.length;j++) {
+                        var insDoc = WebSquare.xml.parse( insStr[j] );
+                        WebSquare.ModelUtil.setInstanceNode( insDoc , tempTreeNode, null, "append" );
+                   }
+                }
+             }
+
+             WebSquare.ModelUtil.setInstanceNode( dataDoc , tempTreeNode , null, "append" );
+             
+             if (upDownGbn == "2") {
+                if (i == insRow) {                      
+                   for (var j=0;j<insStr.length;j++) {
+                        var insDoc = WebSquare.xml.parse( insStr[j] );
+                        WebSquare.ModelUtil.setInstanceNode( insDoc , tempTreeNode, null, "append" );
+                   }
+                }
+             }
+        }
+
+        WebSquare.ModelUtil.removeChildNodes( rootNode );
+
+        WebSquare.ModelUtil.copyNode( "tempTreeList/" + subNode.substring(0,subNode.indexOf("/")) , rootNode ); 
+        obj.findNode( dragValue);
+    }
+    
+    /*============================================================================
+     ** 기능  : 트리의 동등 레벨로 이동시 이동할 동일레벨중 가까운곳의 node 값을 반환
+     ** 인수 :  obj :트리id, 
+     *        treeNode : 트리와 연결된 DataSet - type array 인 노드까지, 
+     *        colName: 배열, 트리에 표시되는 item명 value, label, depth 순
+     *        value : DrapNode의 값(value)
+     *        upDownGbn : 위로 이동 아래로 이동 구분 (1 : 위로 이동, 2: 아래로 이동 )
+     ** 결과  : 동등 레벨로 이동
+     ============================================================================*/
+    function treeNodeAfterFindNode(obj, treeNode, colName, value, upDownGbn) {
+        var level = getValue( treeNode + "/object["+ colName[0] + "='" +value+"']/" + colName[2]);
+    
+        var dataArr = WebSquare.ModelUtil.findInstanceNodes( treeNode + "/object" );
+        var currentIdx = 0;
+        for (var i=0;i<dataArr.length;i++) {
+             var tempValue =  getValue( treeNode + "/object["+(i+1)+"]/" + colName[0] );
+             
+             if (tempValue == value) {
+                if (upDownGbn == "1") currentIdx = i;
+                else if (upDownGbn == "2") currentIdx = i+2;
+                break;
+             }
+        }
+        
+        var dropValue = "";
+        var dropLevel = "";
+        
+        if (upDownGbn == "1") {
+           for ( var i=currentIdx;i>0;i--) {
+               dropLevel = getValue( treeNode + "/object["+i+"]/" + colName[2] );
+            
+               if (level == dropLevel) {
+                  dropValue = getValue( treeNode + "/object["+i+"]/" + colName[0] );
+                  break;
+               } else if (level > dropLevel) {
+                  dropValue = "";
+                  break;  
+               }
+           }
+        } else if (upDownGbn == "2") {
+           //for ( var i=currentIdx;i<dataArr.length;i++) {
+           for ( var i=currentIdx;i>0;i--) {   
+               dropLevel = getValue( treeNode + "/object["+i+"]/" + colName[2] );
+               if (level == dropLevel) {
+                  dropValue = getValue( treeNode + "/object["+i+"]/" + colName[0] );
+                  break;
+               } else if (level > dropLevel) {
+                  dropValue = "";
+                  break;  
+               }
+           }
+        }
+        return dropValue;
+    }
+    
+    /*============================================================================
+     ** 기능  : 필수입력 컬럼 
+     ** 인수 :  grid : 그리드 id, arrCol : 필수입력 컬럼명 배열, arrDupCol : 중복체크 컬럼명 배열, delCol : 삭제체크 컬럼
+     ** 결과  : 오류 false, 정상 true
+     *        20121218  삭제 체크된 row는 필수체크 안함
+     ============================================================================*/
+    function chkValidGrid(grid, arrCol, arrDupCol) {
+    	var rtn = true;
+        var arr = grid.getModifiedIndex();
+        
+        for(var i=0 ;i<arr.length; i++) {
+            for(var j=0; j<arrCol.length; j++) {
+                if(grid.getCellData(arr[i], arrCol[j]) == "" && grid.getCellChecked(arr[i], "delCheck") == false) {
+                    grid.setCellBackgroundColor( arr[i], arrCol[j] , "#FC8383" );
+                    rtn = rtn && false;
+                } else {
+                	logger(grid.getCellReadOnly(arr[i],arrCol[j]));
+                    grid.setCellStyle(arr[i] , arrCol[j], "background", "" );
+                    if(grid.getCellReadOnly(arr[i],arrCol[j])) 
+                    	grid.setCellBackgroundColor( arr[i] , arrCol[j] , "#FFFCD7");
+                    else 
+                    	grid.setCellBackgroundColor( arr[i] , arrCol[j] , "");
+		            grid.setCellStyle(arr[i] , arrCol[j], "background-repeat", "no-repeat" );
+		            //grid.setCellReadOnly(arr[i] , arrCol[j] , "false" );
+                }
+            }
+        }
+        if(!rtn) {showMsg("C_I008"); return rtn; }
+        
+        
+        if(arrDupCol == undefined) 
+        	return rtn;
+        else {
+        	//중복체크
+        	var tmpArr = new Array();
+        	for(var i=0; i<grid.getRowCount(); i++) {
+        		for(var j=0; j<arrDupCol.length; j++) {
+    				var tmp = new Array();
+    				var arrTmp;
+    				for(var k=0; k<arrDupCol.length; k++) {
+    					arrTmp = grid.getMatchedIndex(arrDupCol[k], grid.getCellData(i, arrDupCol[k]), true, 0, grid.getRowCount());
+    					if(arrTmp.length > 1) {
+   							for(var m = 0; m<arrTmp.length; m++) {
+   								tmp.push(arrTmp[m]);
+   							}
+    					}
+    				}
+    				if(tmp.length > 1  && arrDupCol.length > 1) {
+    					tmp.sort();
+    					var tempArray = new Array();
+    					
+    					for(var x=0; x<tmp.length; x++) {
+    						if(tempArray.length == 0) {
+    							tempArray.push(tmp[x]);
+    						} else if(tempArray[tempArray.length-1] == tmp[x]) {
+    							tempArray.push(tmp[x]);
+    							if(arrDupCol.length == tempArray.length) {
+    								if(tmp[x] != i) {
+        								for(var y=0; y<arrDupCol.length; y++) {
+        									tmpArr.push(arrDupCol[y]);
+        								}
+    								}
+    								tempArray = [];
+    							} else if(arrDupCol.length < tempArray.length) {
+    								tempArray = [];
+    								tempArray.push(tmp[x]);
+    							}
+    						} else {
+    							tempArray = [];
+    							tempArray.push(tmp[x]);
+    						}
+    					}
+    				} else if(tmp.length > 1 && arrDupCol.length == 1) {
+    					tmpArr.push(arrDupCol[0]);
+    				}
+        		}
+        		
+        		//if(tmpArr.length == arrDupCol.length) {
+        		if(tmpArr.length > 0) {
+        			for(var c=0; c<tmpArr.length; c++) {
+        				grid.setCellBackgroundColor(i, tmpArr[c] , "#FC8383");
+        			}
+        			showMsg("C_I055");
+        			return false;
+        		} else {
+        			for(var c=0; c<arrDupCol.length; c++) {
+    					for(var aa=0; aa<arrDupCol.length; aa++) {
+    						grid.setCellStyle(i , arrDupCol[aa], "background", "" );
+    						
+    						if(grid.getCellReadOnly(i,arrDupCol[aa])) 
+    	                    	grid.setCellBackgroundColor( i , arrDupCol[aa] , "#FFFCD7" );
+    	                    else 
+    	                    	grid.setCellBackgroundColor( i , arrDupCol[aa] , "" );
+        		            grid.setCellStyle(i , arrDupCol[aa], "background-repeat", "no-repeat" );
+    					}
+        			}
+        			tmpArr = [];
+        		}
+        	}
+        }
+        return rtn;
+     }
+    
+    /*
+    function chkValidGrid(grid, arrCol, arrDupCol) {
+    	var rtn = true;
+        var arr = grid.getModifiedIndex();
+        
+        for(var i=0 ;i<arr.length; i++) {
+            for(var j=0; j<arrCol.length; j++) {
+                if(grid.getCellData(arr[i], arrCol[j]) == "") {
+                    grid.setCellBackgroundColor( arr[i], arrCol[j] , "#FC8383" );
+                    rtn = rtn && false;
+                } else {
+                    grid.setCellStyle(arr[i] , arrCol[j], "background", "" );
+		            grid.setCellBackgroundColor( arr[i] , arrCol[j] , "#FFFCD7" );
+		            grid.setCellStyle(arr[i] , arrCol[j], "background-repeat", "no-repeat" );
+		            //grid.setCellReadOnly(arr[i] , arrCol[j] , "false" );
+                }
+            }
+        }
+        if(!rtn) {showMsg("C_I008"); return rtn; }
+        
+        
+        if(arrDupCol == undefined) 
+        	return rtn;
+        else {
+        	//중복체크
+        	var tmpArr = new Array();
+        	for(var i=0; i<grid.getRowCount(); i++) {
+        		for(var j=0; j<arrDupCol.length; j++) {
+        			if(arrDupCol[j].indexOf("^") >= 0) {
+        				var arr = arrDupCol[j].split("^");
+        				var b = true;
+        				var str = "";
+        				var tmp = new Array();
+        				var arrTmp;
+        				for(var k=0; k<arr.length; k++) {
+        					arrTmp = grid.getMatchedIndex(arr[k], grid.getCellData(i, arr[k]), true, 0, grid.getRowCount());
+        					if(arrTmp.length > 1) {
+       							for(var m = 0; m<arrTmp.length; m++) {
+       								tmp.push(arrTmp[m]);
+       							}
+        					} else {
+        						colArr.push(arr[k]);
+        					}
+        				}
+        				if(tmp.length > 1) {
+        					tmp.sort();
+        					var tempArray = new Array();
+        					
+        					for(var x=0; x<tmp.length; x++) {
+        						if(tempArray.length == 0) {
+        							tempArray.push(tmp[x]);
+        						} else if(tempArray[tempArray.length-1] == tmp[x]) {
+        							tempArray.push(tmp[x]);
+        							
+        							if(arr.length == tempArray.length) {
+        								if(tmp[x] != i) {
+	        								for(var y=0; y<arr.length; y++) {
+	        									tmpArr.push(arr[y]);
+	        								}
+        								}
+        								tempArray = [];
+        							} else if(arr.length < tempArray.length) {
+        								tempArray = [];
+        								tempArray.push(tmp[x]);
+        							}
+        						} else {
+        							tempArray = [];
+        							tempArray.push(tmp[x]);
+        						}
+        					}
+        				}
+
+        			} else {
+            			if(grid.getMatchedIndex(arrDupCol[j], grid.getCellData(i, arrDupCol[j]), true, 0, grid.getRowCount()).length > 1) {
+            				tmpArr.push(arrDupCol[j]);
+            			}
+        			}
+        		}
+        		
+        		//if(tmpArr.length == arrDupCol.length) {
+        		if(tmpArr.length > 0) {
+        			for(var c=0; c<tmpArr.length; c++) {
+        				grid.setCellBackgroundColor(i, tmpArr[c] , "#FC8383");
+        			}
+        			showMsg("C_I055");
+        			return false;
+        		} else {
+        			for(var c=0; c<arrDupCol.length; c++) {
+        				if(arrDupCol[c].indexOf("^") >= 0) {
+        					var arrayCol = arrDupCol[c].split("^");
+        					for(var aa=0; aa<arrayCol.length; aa++) {
+        						grid.setCellStyle(i , arrayCol[aa], "background", "" );
+            		            grid.setCellBackgroundColor( i , arrayCol[aa] , "#FFFCD7" );
+            		            grid.setCellStyle(i , arrayCol[aa], "background-repeat", "no-repeat" );
+        					}
+        				} else {
+        					grid.setCellStyle(i , arrDupCol[c], "background", "" );
+        		            grid.setCellBackgroundColor( i , arrDupCol[c] , "#FFFCD7" );
+        		            grid.setCellStyle(i , arrDupCol[c], "background-repeat", "no-repeat" );
+        				}
+        			}
+        			tmpArr = [];
+        		}
+        	}
+        }
+        return rtn;
+     }
+    */
+    
+    
+    
+    
+    /*============================================================================
+     ** 기능  : 그리드내에서 여러 컬럼과 비교하여 해당 입력 값과 일치 하는 행번호를 찾는다. 
+     *        그리드 입력행 처리 시 gridNewRow() 함수로 처리한 그리드에서 적용 ( 필수 입력값 체크 위해)
+     ** 인수 :  object : 그리드 id,
+     *        strKey : 그리드의 값과 비교 할 값 
+     *        key필드 1, key필드2.... : 그리드내에서 비교할 컬럼 리스트  
+     ** 결과  : 찾은 행의 번호를 배열로 Return
+     ============================================================================*/
+    function gridMatchIndex() {
+        var matchIdxArr = new Array();
+        var object   = eval(arguments[0]);
+        var strKey   = arguments[1];       // 비교 대상 변수
+        
+        for (var i=0;i<object.getRowCount();i++) { 
+             // 그리드내에 동일한 자료가 있는지 체크 한다. getMatched  함수는 한개의 필드에 대해서만 비교하기 때문에 일일이 비교 하여 처리
+             var matchCnt = 0;
+             var strData = "";
+             for (var argIdx=2;argIdx<arguments.length;argIdx++) {   
+                 strData += object.getCellDisplayData( gridIdx , arguments[argIdx] );   
+             }   
+                 
+             if (strKey == strData) {
+                matchIdxArr[matchCnt] = i;
+                matchCnt++;
+             }
+        }
+        
+        return matchIdxArr;
+    }
+    
+    /*============================================================================
+     ** 기능  : 공통코드 조회조건 세팅
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function setCodeSearch(codeId, condition, orderColumn, orderOpt) {
+    	//orderColumn = "";
+    	//orderOpt = "";
+    	
+    	if(orderColumn == undefined) orderColumn = "";
+    	if(orderOpt == undefined) orderOpt = "";
+    	
+    	
+    	if(getValue("requestSelectBoxCode/selectBoxObject/cmcdId") == "") {
+	    	setValue("requestSelectBoxCode/selectBoxObject/cmcdId", codeId);
+	    	if(condition != undefined) {
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal6",  condition[0] == "" ? " " : condition[0]);
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal7",  condition[1] == "" ? " " : condition[1]);
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal8",  condition[2] == "" ? " " : condition[2]);
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal9",  condition[3] == "" ? " " : condition[3]);
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal10", condition[4] == "" ? " " : condition[4]);
+	    	}
+	    	setValue("requestSelectBoxCode/selectBoxObject/orderColumn", orderColumn == "" ? " " : orderColumn);
+	    	setValue("requestSelectBoxCode/selectBoxObject/orderOpt", orderOpt == "" ? " " : orderOpt);
+	    	setValue("requestSelectBoxCode/selectBoxObject/idntLclsCd", " ");
+			setValue("requestSelectBoxCode/selectBoxObject/taskDeptCd", " ");
+    	} else {
+    		setValue("requestSelectBoxCode/selectBoxObject/cmcdId", getValue("requestSelectBoxCode/selectBoxObject/cmcdId") + "=" + codeId);
+	    	if(condition != undefined) {
+	    		if(condition.length > 5) {
+	    			showMsg("C_I040","부가정보값");
+	    		} else {
+		    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal6",  condition[0] == "" ? getValue("requestSelectBoxCode/selectBoxObject/subInfoVal6")  + "= " : getValue("requestSelectBoxCode/selectBoxObject/subInfoVal6")  + "=" + condition[0]);
+		    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal7",  condition[1] == "" ? getValue("requestSelectBoxCode/selectBoxObject/subInfoVal7")  + "= " : getValue("requestSelectBoxCode/selectBoxObject/subInfoVal7")  + "=" + condition[1]);
+		    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal8",  condition[2] == "" ? getValue("requestSelectBoxCode/selectBoxObject/subInfoVal8")  + "= " : getValue("requestSelectBoxCode/selectBoxObject/subInfoVal8")  + "=" + condition[2]);
+		    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal9",  condition[3] == "" ? getValue("requestSelectBoxCode/selectBoxObject/subInfoVal9")  + "= " : getValue("requestSelectBoxCode/selectBoxObject/subInfoVal9")  + "=" + condition[3]);
+		    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal10", condition[4] == "" ? getValue("requestSelectBoxCode/selectBoxObject/subInfoVal10")  + "= " : getValue("requestSelectBoxCode/selectBoxObject/subInfoVal10") + "=" + condition[4]);
+		    	}
+	    	}
+	    	
+	    	setValue("requestSelectBoxCode/selectBoxObject/orderColumn", orderColumn == "" ? getValue("requestSelectBoxCode/selectBoxObject/orderColumn") + "= " : getValue("requestSelectBoxCode/selectBoxObject/orderColumn") + "=" + orderColumn);
+	    	setValue("requestSelectBoxCode/selectBoxObject/orderOpt", orderOpt == "" ? getValue("requestSelectBoxCode/selectBoxObject/orderOpt") + "= " : getValue("requestSelectBoxCode/selectBoxObject/orderOpt") + "=" + orderOpt);
+	    	setValue("requestSelectBoxCode/selectBoxObject/idntLclsCd", getValue("requestSelectBoxCode/selectBoxObject/idntLclsCd") + "= ");
+			setValue("requestSelectBoxCode/selectBoxObject/taskDeptCd", getValue("requestSelectBoxCode/selectBoxObject/taskDeptCd") + "= ");
+    	}
+    }
+    
+    /*============================================================================
+     ** 기능  : 보직코드 조회조건 세팅
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function setTaskCodeSearch(idntLclsCd, taskDeptCd) {
+    	if(getValue("requestSelectBoxCode/selectBoxObject/cmcdId") == "") {
+	    	setValue("requestSelectBoxCode/selectBoxObject/cmcdId", "TASK_CD");
+	    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal6",  " ");
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal7",  " ");
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal8",  " ");
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal9",  " ");
+    			setValue("requestSelectBoxCode/selectBoxObject/subInfoVal10", " ");
+    			setValue("requestSelectBoxCode/selectBoxObject/orderColumn",  " ");
+	    		setValue("requestSelectBoxCode/selectBoxObject/orderOpt",     " ");
+		    	setValue("requestSelectBoxCode/selectBoxObject/idntLclsCd", idntLclsCd == "" ? " " : idntLclsCd);
+		    	setValue("requestSelectBoxCode/selectBoxObject/idntLclsCd", taskDeptCd == "" ? " " : taskDeptCd);
+    	} else {
+    		setValue("requestSelectBoxCode/selectBoxObject/cmcdId",       getValue("requestSelectBoxCode/selectBoxObject/cmcdId") + "=" + "TASK_CD");
+    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal6",  getValue("requestSelectBoxCode/selectBoxObject/subInfoVal6")  + "= ");
+    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal7",  getValue("requestSelectBoxCode/selectBoxObject/subInfoVal7")  + "= ");
+    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal8",  getValue("requestSelectBoxCode/selectBoxObject/subInfoVal8")  + "= ");
+    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal9",  getValue("requestSelectBoxCode/selectBoxObject/subInfoVal9")  + "= ");
+    		setValue("requestSelectBoxCode/selectBoxObject/subInfoVal10", getValue("requestSelectBoxCode/selectBoxObject/subInfoVal10") + "= ");
+	    	setValue("requestSelectBoxCode/selectBoxObject/orderColumn",  getValue("requestSelectBoxCode/selectBoxObject/orderColumn") + "= ");
+	    	setValue("requestSelectBoxCode/selectBoxObject/orderOpt",     getValue("requestSelectBoxCode/selectBoxObject/orderOpt") + "= ");
+
+	    	setValue("requestSelectBoxCode/selectBoxObject/idntLclsCd", idntLclsCd == "" ? getValue("requestSelectBoxCode/selectBoxObject/idntLclsCd") + "= " : getValue("requestSelectBoxCode/selectBoxObject/idntLclsCd") + "=" + idntLclsCd);
+			setValue("requestSelectBoxCode/selectBoxObject/taskDeptCd", taskDeptCd == "" ? getValue("requestSelectBoxCode/selectBoxObject/taskDeptCd") + "= " : getValue("requestSelectBoxCode/selectBoxObject/taskDeptCd") + "=" + taskDeptCd);
+    	}
+    }
+    
+    /*============================================================================
+     ** 기능  : 
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function getSelectBoxCode() {
+    	WebSquare.ModelUtil.executeSubmission("smCmCodeSelectboxSpc");
+    }
+    
+   
+    /*============================================================================
+     ** 기능  : 셀렉트박스 코드 조회 후 selectbox 컴포넌트 에 노드를 세팅
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function setSelectBoxNode(selectboxId, codeId, label, value) {
+        if(label == undefined) {
+            eval(selectboxId).setNodeSet( "responseSelectBoxCode/object/selectboxCdSpcList/object[@id='" + codeId + "']/list/object", "cmcdValNm", "cmcdVal");
+        } else {
+            eval(selectboxId).setNodeSet( "responseSelectBoxCode/object/selectboxCdSpcList/object[@id='" + codeId + "']/list/object", label, value);
+        }
+    }
+    
+    /*============================================================================
+     ** 기능  : 코드 결과를 노드에 복사
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function copySelectboxCode(codeId, descNode) {
+        WebSquare.ModelUtil.copyNode("responseSelectBoxCode/object/selectboxCdSpcList/object[@id='" + codeId + "']/list" , descNode);
+    }
+    
+    
+    
+    function getOrgCodeSelectbox(orgClsCd, useYn,mergeValue) {
+        //if(orgClsCd == undefined || orgClsCd == "") { showMsg("C_I041", "조직분류코드"); return;}
+        //폐기여부 Y인 경우 폐기된 조직은 나타나지 않음    N인 경우 폐기된 조직도 나옴
+        if(useYn == undefined || useYn == "") 
+            useYn = "Y";
+        setValue("requestOrgSelectBox/orgSelectBoxObject/orgClsCd", orgClsCd);
+        setValue("requestOrgSelectBox/orgSelectBoxObject/useYn", useYn);
+        setValue("requestOrgSelectBox/orgSelectBoxObject/merge",mergeValue );
+        setValue("requestOrgSelectBox/orgSelectBoxObject/dpmjDvcd", "99");
+        WebSquare.ModelUtil.executeSubmission("smOrgCodeSelectbox");
+    }
+    
+    function getOrgCodeSelectboxCm(orgClsCd, useYn, dnnDvcd) {
+        //if(orgClsCd == undefined || orgClsCd == "") { showMsg("C_I041", "조직분류코드"); return;}
+        //폐기여부 Y인 경우 폐기된 조직은 나타나지 않음    N인 경우 폐기된 조직도 나옴
+        if(useYn == undefined || useYn == "") 
+            useYn = "Y";
+        setValue("requestOrgSelectBox/orgSelectBoxObject/orgClsCd", orgClsCd);
+        setValue("requestOrgSelectBox/orgSelectBoxObject/useYn", useYn);
+        setValue("requestOrgSelectBox/orgSelectBoxObject/useYn", dnnDvcd);
+        WebSquare.ModelUtil.executeSubmission("smOrgCodeSelectbox");
+    }
+    
+    
+    
+    function setOrgCodeSelectBox(selectId, level, upOrgCd) {
+        var nodes = WebSquare.ModelUtil.findInstanceNodes("responseOrgSelectBox/object/orgCdBasList/object");
+        eval(selectId).removeAll(true);
+        if(level != "1" && upOrgCd == "") return;
+        //eval(selectId).addItem("", "선택");
+        
+        for(var i=1; i<=nodes.length; i++) {
+            if(level == "1") {
+                if(getValue("responseOrgSelectBox/object/orgCdBasList/object[" + i + "]/lvl") == level) {
+                    eval(selectId).addItem(getValue("responseOrgSelectBox/object/orgCdBasList/object[" + i + "]/orgCd"), getValue("responseOrgSelectBox/object/orgCdBasList/object[" + i + "]/deptNm"));
+                }
+            } else {
+                if(getValue("responseOrgSelectBox/object/orgCdBasList/object[" + i + "]/lvl") == level && getValue("responseOrgSelectBox/object/orgCdBasList/object[" + i + "]/upOrgCd") == upOrgCd) {
+                    eval(selectId).addItem(getValue("responseOrgSelectBox/object/orgCdBasList/object[" + i + "]/orgCd"), getValue("responseOrgSelectBox/object/orgCdBasList/object[" + i + "]/deptNm"));
+                }
+            }
+        }
+        eval(selectId).setSelectedIndex(0);
+    }
+    
+    
+    
+    /*============================================================================
+     ** 기능  : 조직코드정보를 조회( '인문대학>>인문학부>>인문학과' 형태 )
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function getOrgCodeSingleSelectbox(orgClsCd, useYn) {
+        if(orgClsCd == undefined || orgClsCd == "") { showMsg("C_I041", "조직분류코드"); return;}
+        //폐기여부 Y인 경우 폐기된 조직은 나타나지 않음    N인 경우 폐기된 조직도 나옴
+        if(useYn == undefined || useYn == "") 
+            useYn = "Y";
+        setValue("requestOrgSingleSelectBox/orgSingleSelectBoxObject/orgClsCd", orgClsCd);
+        setValue("requestOrgSingleSelectBox/orgSingleSelectBoxObject/useYn", useYn);
+        WebSquare.ModelUtil.executeSubmission("smOrgCodeSingleSelectbox");                
+    }
+    
+    /*============================================================================
+     ** 기능  : 조직코드정보를 조회( '인문대학>>인문학부>>인문학과' 형태 )(일반행정용)
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function getGmOrgCodeSingleSelectbox(orgClsCd, useYn) {
+        if(orgClsCd == undefined || orgClsCd == "") { showMsg("C_I041", "조직분류코드"); return;}
+        //폐기여부 Y인 경우 폐기된 조직은 나타나지 않음    N인 경우 폐기된 조직도 나옴
+        if(useYn == undefined || useYn == "") 
+            useYn = "Y";
+        setValue("requestOrgSingleSelectBox/orgSingleSelectBoxObject/orgClsCd", orgClsCd);
+        setValue("requestOrgSingleSelectBox/orgSingleSelectBoxObject/useYn", useYn);
+        WebSquare.ModelUtil.executeSubmission("smGmOrgCodeSingleSelectbox");                
+    }
+    
+    /*============================================================================
+     ** 기능  : 조직코드콤보를 설정( '인문대학>>인문학부>>인문학과' 형태 )
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+    function setOrgCodeSingleSelectBox(selectId) {
+        var nodes = WebSquare.ModelUtil.findInstanceNodes("responseOrgSingleSelectBox/object/orgCdBasList/object");
+        eval(selectId).removeAll(true);
+        
+        //eval(selectId).addItem("", "선택");
+        
+        for(var i=1; i<=nodes.length; i++) {        	
+            eval(selectId).addItem(getValue("responseOrgSingleSelectBox/object/orgCdBasList/object[" + i + "]/orgCd"), getValue("responseOrgSingleSelectBox/object/orgCdBasList/object[" + i + "]/deptNm"));
+        }
+        eval(selectId).setSelectedIndex(0);
+    }
+    
+    
+    
+    /*============================================================================
+     ** 기능  : 코드 결과를 노드에 복사  fff
+     ** 인수 :                  
+     ** 결과  : 
+     ============================================================================*/
+    function copySingleSelectboxOrgCode(descNode) {
+        WebSquare.ModelUtil.copyNode("responseOrgSingleSelectBox/object/orgCdBasList" , descNode);
+    }
+    
+    /*============================================================================
+     ** 기능  : 시스템에서 사용되는 조직, 업무별 년도 학기를 반환 
+     ** 인수 : 조직, 업무ID
+     ** 결과  : 년도,학기를 가지고 있는 object
+     ============================================================================*/    
+    function getCurrentYearSmr(orgGroupCd, bizDvcd){
+        var obj = new Object();
+        WebSquare.ModelUtil.setInstanceValue( "reqCurrentYearSmrParam/orgGroupCd", orgGroupCd );
+        WebSquare.ModelUtil.setInstanceValue( "reqCurrentYearSmrParam/bizDvcd"   , bizDvcd );
+        execSubmission("getCommonDataSubm", "reqCurrentYearSmrParam", "resCurrentYearSmr","/bassyyyysmr/selectCurrentYearSmr.do");
+        
+        obj.year  =  WebSquare.ModelUtil.getInstanceValue("resCurrentYearSmr/object/currentYearSmr/year");
+        obj.smrCd =  WebSquare.ModelUtil.getInstanceValue("resCurrentYearSmr/object/currentYearSmr/smrCd");
+        obj.smrNm =  WebSquare.ModelUtil.getInstanceValue("resCurrentYearSmr/object/currentYearSmr/smrNm");
+        
+        obj.fileSeq1 =  WebSquare.ModelUtil.getInstanceValue("resCurrentYearSmr/object/currentYearSmr/fileSeq1");
+        obj.fileSeq2 =  WebSquare.ModelUtil.getInstanceValue("resCurrentYearSmr/object/currentYearSmr/fileSeq2");
+        obj.fileSeq3 =  WebSquare.ModelUtil.getInstanceValue("resCurrentYearSmr/object/currentYearSmr/fileSeq3");
+        return obj;
+    }
+    
+    /*============================================================================
+     ** 기능  : 현재 일자(시) 
+     ** 인수 : dateFormat
+     ** 결과  : dateFormat에 따른 현재 일자(시)
+     ============================================================================*/    
+    function getCurrentDate(dateFormat){
+        if(dateFormat == undefined || dateFormat == "" || dateFormat == null){
+        	dateFormat = "YYYYMMDD";
+        }
+        WebSquare.ModelUtil.setInstanceValue( "reqCurrentDateParam/dateFormat", dateFormat );
+        execSubmission("getCommonDataSubm", "reqCurrentDateParam", "resCurrentDate","/bassyyyysmr/selectCurrentDate.do");
+        
+        return WebSquare.ModelUtil.getInstanceValue("resCurrentDate/object/currentDate/currentDate");
+    }
+    
+    
+    /*============================================================================
+     ** 기능  : 주민번호 체크 
+     ** 인수 : 13자리 숫자만 입력
+     ** 결과  : 
+     ============================================================================*/    
+    function chkJuminNo(juminNo){
+     	  if(juminNo=="" || juminNo==null) {
+     		showMsg("C_I054", "주민등록번호");
+		    return false;
+		  }
+     	  if(juminNo.length!=13) {
+     		  showMsg("C_I042", "13자리");
+     		  return false;
+     	  }
+     	  
+		  var jumin1 = juminNo.substr(0,6);
+		  var jumin2 = juminNo.substr(6,7);
+		  var yy     = jumin1.substr(0,2);        // 년도
+		  var mm     = jumin1.substr(2,2);        // 월
+		  var dd     = jumin1.substr(4,2);        // 일
+		  var genda  = jumin2.substr(0,1);        // 성별
+		  var msg, ss, cc;
+		  // 숫자가 아닌 것을 입력한 경우
+		  if (!isNumeric(jumin1)) {
+			  showMsg("C_I042", "앞자리");
+		    return false;
+		  }
+		  
+		  // 길이가 6이 아닌 경우
+		  if (jumin1.length != 6) {
+		    showMsg("C_I040", "주민등록번호 앞자리");
+		    return false;
+		  }
+		  
+		  // 첫번째 자료에서 연월일(YYMMDD) 형식 중 기본 구성 검사
+		  if (yy < "00" 
+		      || yy > "99" 
+		      || mm < "01" 
+		      || mm > "12" 
+		      || dd < "01" 
+		      || dd > "31") {
+			  showMsg("C_I040", "주민등록번호 앞자리");
+		    return false;
+		  }
+		  
+		  // 숫자가 아닌 것을 입력한 경우
+		  if (!isNumeric(jumin2)) {
+			  showMsg("C_I042", "뒷자리");
+		    return false;
+		  }
+		  // 길이가 7이 아닌 경우
+		  if (jumin2.length != 7) {
+			  showMsg("C_I040", "주민등록번호 뒷자리");
+		    return false;
+		  }
+		  
+		  // 성별부분이 1 ~ 8 가 아닌 경우
+		  if (genda < "1" || genda > "8") {
+			  showMsg("C_I040", "주민등록번호 뒷자리");
+		    return false;
+		  }
+		 
+		  // 연도 계산 - 1 또는 2: 1900년대, 3 또는 4: 2000년대
+		  cc = (genda == "1" || genda == "2") ? "19" : "20";
+		  // 첫번째 자료에서 연월일(YYMMDD) 형식 중 날짜 형식 검사
+		  if (isValidDate(cc+yy+mm+dd) == false) {
+			  showMsg("C_I040", "주민등록번호 앞자리");
+		    return false;
+		  }
+		  
+		  // Check Digit 검사
+		  if (!isSSN(jumin1, jumin2)) {
+		    showMsg("C_I108", "주민등록번호");
+		    return false;
+		  }
+		  return true;
+		}
+    
+    /*============================================================================
+     ** 기능  : 날짜 체크 (사용하지 않음) 
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/  	
+	/*function isValidDate(iDate) {
+	   
+	  if( iDate.length != 8 ) {
+	    return false;
+	  }
+	  
+	  alert(parseInt(iDate.substring(4, 6)) - 1);
+	  
+	  oDate = new Date();
+	  oDate.setFullYear(iDate.substring(0, 4));
+	  oDate.setMonth(parseInt(iDate.substring(4, 6)) - 1);
+	  oDate.setDate(iDate.substring(6));
+	  
+	  if( oDate.getFullYear()     != iDate.substring(0, 4) 
+	      || oDate.getMonth() != parseInt(iDate.substring(4, 6)-1 ) 
+	      || oDate.getDate()      != iDate.substring(6) ){
+	     
+	    return false;
+	  }
+	  return true;
+	}*/
+
+    /*============================================================================
+     ** 기능  : 윤년 여부 체크
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+	function isLeaf(year) {
+	    var leaf = false;
+
+	    if(year % 4 == 0) {
+	        leaf = true;
+
+	        if(year % 100 == 0) {
+	            leaf = false;
+	        }
+
+	        if(year % 400 == 0) {
+	            leaf = true;
+	        }
+	    }
+
+	    return leaf;
+	}
+
+    /*============================================================================
+     ** 기능  : 날짜 유효성 체크
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+	function isValidDate(d) {
+	    // 포맷에 안맞으면 false리턴
+		if(d.length != 8) {
+			showMsg("C_I167");
+			return false;
+		}
+		
+	    var month_day = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+	    //var dateToken = d.split('-');
+	    var year = Number(d.substring(0, 4));
+	    var month = Number(d.substring(4, 6));
+	    var day = Number(d.substring(6));
+	    
+	    // 날짜가 0이면 false
+	    if(day == 0) {
+	        return false;
+	    }
+
+	    var isValid = false;
+
+	    // 윤년일때
+	    if(isLeaf(year)) {
+	        if(month == 2) {
+	            if(day <= month_day[month-1] + 1) {
+	                isValid = true;
+	            }
+	        } else {
+	            if(day <= month_day[month-1]) {
+	                isValid = true;
+	            }
+	        }
+	    } else {
+	        if(day <= month_day[month-1]) {
+	            isValid = true;
+	        }
+	    }
+
+	    return isValid;
+	}
+	
+    /*============================================================================
+     ** 기능  : 숫자 체크 
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/  
+	function isNumeric(s) { 
+	  for (i=0; i<s.length; i++) { 
+	    c = s.substr(i, 1); 
+	    if (c < "0" || c > "9") return false; 
+	  } 
+	  return true; 
+	}
+	
+	
+	function isSSN(s1, s2) {
+	  n = 2;
+	  sum = 0;
+	  for (i=0; i<s1.length; i++)
+	    sum += parseInt(s1.substr(i, 1)) * n++;
+	  for (i=0; i<s2.length-1; i++) {
+	    sum += parseInt(s2.substr(i, 1)) * n++;
+	    if (n == 10) n = 2;
+	  }
+	  
+	  c = 11 - sum % 11;
+	  if (c == 11) c = 1;
+	  if (c == 10) c = 0;
+	  if (c != parseInt(s2.substr(6, 1))) return false;
+	  else return true;
+	}
+	
+	/*============================================================================
+     ** 기능  : 사업자번호 체크 
+     ** 인수 : 13자리 숫자만 입력
+     ** 결과  : 
+     ============================================================================*/    
+    function chkBizNo(bizNo){
+        var a = new Array;
+        var b = new Array(1,3,7,1,3,7,1,3,5);
+        var sum = 0;
+        for (i = 0; i < 10; i++) a[i] = bizNo.substr(i,1);
+        for (i = 0; i < 9;  i++) sum = sum + (a[i] * b[i]);
+        sum = sum + ((a[8] * 5) / 10);
+        y = (sum - (sum % 1)) % 10;
+        if (y == 0)
+            z = 0;
+        else
+            z = 10 - y;
+        if (z != a[9]) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
+    /*============================================================================
+     ** 기능  : 그리드의 내용을 엑셀로 다운로드 
+     * fileName : 다운로드하려는 파일의 이름
+     * type : type이 0인 경우 실제 데이터 1인 경우 눈에 보이는 데이터를 2이면 들어가 있는 data 그대로(filter무시 expression 타입의 셀은 나오지 않음)
+     * showProcess : 다운로드 시 프로세스 창을 보여줄지 여부
+     * showConfirm : 다운로드 확인창을 띄울지 여부(옵션을 킨 경우 advancedExcelDownload를 호출후 사용자가 window의 버튼을 한번더 클릭해야 한다. massStorage는 자동으로 true가 된다)
+     * removeColumns : 다운로드시 excel에서 삭제하려는 열의 번호(여러 개일 경우 ,로 구분)
+     * foldColumns : 다운로드시 excel에서 fold하려는 열의 번호(여러 개일 경우 ,로 구분)
+     * startRowIndex : excel파일에서 그리드의 데이터가 시작되는 행의 번호(헤더 포함)
+     * startColumnIndex : excel파일에서 그리드의 데이터가 시작되는 열의 번호(헤더 포함)
+     * headerColor : excel파일에서 그리드의 header부분의 색
+     * bodyColor : excel파일에서 그리드의 body부분의 색
+     * subTotalColor: excel파일에서 그리드의 subtotal부분의 색
+     * footerColor : excel파일에서 그리드의 footer부분의 색
+     * massStorage : 대용량 다운로드 여부 (default는 true 이 옵션을 true로 하고 showConfirm을 false로 한 경우에 IE에서 신뢰할만한 사이트를 체크하는 옵션이 뜬다.)
+     * bodyWordwrap: 다운로드시 바디의 줄 바꿈 기능
+     * useEuroLocale: 다운로드시 유로화 처리 기능(,와 .이 반대인 경우처리)
+     * useSubTotal: 다운로드시 SubTotal을 출력 할지 여부( "true"인경우 출력, "false"인경우 미출력)
+     * useFooter: 다운로드시 Footer를 출력 할지 여부( "true"인경우 출력, "false"인경우 미출력)
+     * infoArr: infoArr 그리드에 대한 내용을 추가로 다른 셀에 표현하는 경우 사용하는 배열
+     * ex) var infoArr = [];
+     * var infoObj = {rowIndex : 1 , colIndex : 9 , rowSpan : 2 , colSpan : 2 , text : "데이터표시" , textAlign : "right"};
+     * infoArr.push( infoObj );
+     * grid1.advancedExcelDownload(options , infoArr);
+     * @param <Object:Y> options JSON형태로 저장된 그리드의 엑셀 다운로드 옵션
+     * 
+     * 
+     * 
+     * 
+     * ex)saveExcelDown("codeGrid", "test.xls", "1", true, true);
+     ============================================================================*/    
+    function saveExcelDown(gridId, fileName, type, showProcess, showConfirm, removeColumns, headerColor, bodyColor, subTotalColor, footerColor, massStorage, bodyWordwrap, useEuroLocale, useSubTotal, useFooter, infoArr, startRowIndex){
+    	var options = {
+    			fileName:fileName
+    		   ,type:type
+    		   ,removeColumns:removeColumns
+    		   ,showProcess:showProcess
+    		   ,showConfirm:showConfirm
+    		   ,headerColor:headerColor
+    		   ,bodyColor:bodyColor
+    		   ,subTotalColor:subTotalColor
+    		   ,footerColor:footerColor
+    		   ,massStorage:massStorage
+    		   ,bodyWordwrap:bodyWordwrap
+    		   ,useEuroLocale:useEuroLocale
+    		   ,useSubTotal:useSubTotal
+    		   ,useFooter:useFooter
+    		   ,startRowIndex:startRowIndex
+    	}
+    	eval(gridId).advancedExcelDownload(options, infoArr);
+    }
+    
+	/*============================================================================
+     ** 기능  : 이미지 파일을 다운로드하여 보여준다.
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/   
+    function downloadImgFile(fileSeq) {
+    	var tFileSeq = Base64.encode(fileSeq);
+    	return "/file/downloadFile.do?fileSeq=" + tFileSeq; 
+    }
+    
+    /*============================================================================
+     ** 기능  : 그리드 선택 컬러을 셀 또는 행으로 Setting (script의 시작시 호출)
+     ** 인수 : obj(그리드), mode - row (행), cell(셀)
+     ** 결과  : 
+     ============================================================================*/  
+    function gridFocusMode(obj, mode) {
+    	obj.setAttribute("focusMode",mode);
+        
+    	if (mode == "row") obj.setAttribute("selectedRowColor","#FFFCD7");
+        else if (mode == "cell") obj.setAttribute("selectedCellColor","#FFFCD7");
+    }
+    
+    /*============================================================================
+     ** 기능  : 숫자와 숫자포맷 을 받아서 포맷에 맞는 문자열  리턴
+     ** 인수 : number, format
+     **      fn_comm_toFormatNumber( 1234567890, "#,###"  ) -> 1,234,567,890
+     **      fn_comm_toFormatNumber( 1234.567, "#,###.##" ) -> 1,234.56
+     **      fn_comm_toFormatNumber( "1234.5", "#,###.00" ) -> 1,234.50
+     ** 결과  : 
+     ============================================================================*/  
+    function toFormatNumber(number, format) {
+    	var returnValue = "";
+    	number = ""+number;
+    	var p = format.indexOf(".");
+    	var p1 = number.indexOf(".");
+    	var positive = "";
+    	var negative = "";
+    	var max = 99;
+    	var d = false;
+    	if (p < 0) p = format.length;
+    	if (p1 < 0) p1 = number.length;
+    	if (format.indexOf(",") >= 0) {
+    		d = true;
+    		max = format.substring(format.indexOf(","), p).length;
+    	}
+    	for (i=p1-1; i >= 0; i--) {
+    		if (d && i != 0 && (p1-i)%3 == 0) {
+    			positive = ","+number.charAt(i) + positive;
+    		} else {
+    			positive = number.charAt(i) + positive;
+    		}
+    	}
+    	for (i=p+1; i < format.length; i++) {
+    		p2 = p1+(i-p);
+    		if (number.length <= p2) {
+    			if (format.charAt(i) == "0") {
+    				negative = negative + "0";
+    			}
+    		} else {
+    			negative = negative + number.charAt(p2);
+    		}
+    	}
+    	if (negative.length > 0) {
+    		returnValue = positive+"."+negative;
+    	} else {
+    		returnValue = positive;
+    	}
+    	return returnValue;
+    }
+    
+    
+    /*============================================================================
+     ** 기능  : 컴포넌트 배열 목록에 keydown 이벤트 리스너를 등록
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/  
+    function setKeydownEvent(arrObject) {
+        var objId;
+        for(var i=0; i<arrObject.length; i++) {
+        	
+            //objId = eval("document.all." + arrObject[i]);
+        	objId = document.getElementById(arrObject[i]);
+            if(objId.addEventListener) {  //ie9, firefox, chrome....
+               objId.addEventListener("keydown", keydownHandler);
+            } else { //ie8 이하
+            	objId.attachEvent("onkeydown", keydownHandler);
+            }
+        }
+     }
+     
+    /*============================================================================
+     ** 기능  : keydown이벤트가 등록된 컴포넌트에서 enter key 입력시 자동으로 조회를 함.
+     ** 인수 : 
+     ** 결과  : 
+     ============================================================================*/
+     function keydownHandler(e, func) {
+    	 var target;
+    	 
+       // 이벤트 처리 코드
+       //var id = this.id;
+       if(e.keyCode == "13") {
+    	 //현재 보이는 텍스트를 해당 input에 값을 설정해야함, 그렇지 않을 경우 이전 값이 들어감
+          //var target = (e)? e.target:window.event.srcElement;
+    	 if (!e) var e = window.event;
+  		 if (e.target) target = e.target;
+  		 else if (e.srcElement) target = e.srcElement;
+    	   
+          var id = target.id;
+          eval(id).setValue(eval(id).getDisplayValue());
+          var btn = document.getElementById("searchBtn");
+          if(document.createEventObject) {   //ie  
+            btn.fireEvent('onclick');
+          } else { //chrome, firefox...  
+              var e = document.createEvent('Event');
+              e.initEvent("click", true, true);
+              btn.dispatchEvent(e);
+          }
+       }
+     }
+     
+     
+     /*============================================================================
+      ** 기능  : 
+      ** 인수 : 
+      ** 결과  : 
+      ============================================================================*/
+     function addYear(date, nMonths) {
+     	if(date.length != 8) {
+    		showMsg("C_I107");
+    		return;
+    	}
+     	var returnDate = new Date();
+     	returnDate = Date.parse(getStr2DateString(date)).add(parseInt(nMonths)).year();
+     	return  returnDate.getFullYear() + "" + getLpadStr((returnDate.getMonth()+1), 2, '0') + ""  + getLpadStr(returnDate.getDate(), 2, '0');
+     }
+     
+     /*============================================================================
+      ** 기능  : 
+      ** 인수 : 
+      ** 결과  : 
+      ============================================================================*/
+     function addMonth(date, nMonths) {
+    	if(date.length != 8) {
+    		showMsg("C_I107");
+    		return;
+    	}
+     	var returnDate = new Date();
+     	returnDate = Date.parse(getStr2DateString(date)).add(parseInt(nMonths)).month();
+     	return  returnDate.getFullYear() + "" + getLpadStr((returnDate.getMonth()+1), 2, '0') + ""  + getLpadStr(returnDate.getDate(), 2, '0');
+     }
+     
+     /*============================================================================
+      ** 기능  : 
+      ** 인수 : 
+      ** 결과  : 
+      ============================================================================*/
+     function addDay(date, nMonths) {
+     	if(date.length != 8) {
+     		showMsg("C_I107");
+    		return;
+    	}
+     	var returnDate = new Date();
+     	returnDate = Date.parse(getStr2DateString(date)).add(parseInt(nMonths)).day();
+     	return  returnDate.getFullYear() + "" + getLpadStr((returnDate.getMonth()+1), 2, '0') + ""  + getLpadStr(returnDate.getDate(), 2, '0');
+     }
+     
+     /*============================================================================
+      ** 기능  : 
+      ** 인수 : 
+      ** 결과  : 
+      ============================================================================*/
+     function getStr2DateString(date) {
+    	 return date.substring(0,4) + "-" + date.substring(4,6) + "-" + date.substring(6,8);
+     }
+     
+     /*============================================================================
+      ** 기능  : 
+      ** 인수 : 
+      ** 결과  : 
+      ============================================================================*/
+     function getLpadStr(sValue, nLength, Char) {
+	    if (new String(sValue).valueOf() == "undefined") sValue = "";
+
+	    var strRetVal = new String(sValue);
+	    var strChar = "";
+	    var nIteration = nLength - getLengB(strRetVal);
+	    for (var i = 0; i < nIteration; i++) {
+	        strChar = Char + strChar;
+	    }
+	    return (strChar + strRetVal);
+	}
+
+     /*============================================================================
+      ** 기능  : 
+      ** 인수 : 
+      ** 결과  : 
+      ============================================================================*/
+     function getRpadStr(sValue, nLength, Char) {
+	    if (new String(sValue).valueOf() == "undefined") sValue = "";
+
+	    var strRetVal = new String(sValue);
+	    var strChar = "";
+	    var nIteration = nLength - getLengB(strRetVal);
+	    for (var i = 0; i < nIteration; i++) {
+	        strChar = Char + strChar;
+	    }
+	    return (strRetVal + strChar);
+	}
+     
+     /*===============================================================
+     ** 기능 : 문자열의 길이를 Byte단위로 계산하여 Return
+     ** 인수 : 입력값 String
+     ** 결과 : 문자길이 int
+     **===============================================================*/
+     function getLengB(sValue) {
+         var v_ChkStr = sValue.toString();
+         var v_cnt = 0;
+         for (var i=0; i<v_ChkStr.length; i++)
+         {
+             if (v_ChkStr.charCodeAt(i) > 127)
+             {
+                 v_cnt += 2;
+             } else {
+                 v_cnt += 1;
+             }
+         }
+         return v_cnt;
+     }
+     
+     /*===============================================================
+      ** 기능 : session의 사용자정보 값 return
+      ** 인수 : key : orgLclsCd, orgMclscd, orgSclscd, unifUid, taskCd, userNm, userTypeCd, orgGroupCd, orgCd, orgNm
+      *             
+      ** 결과 : 
+      **===============================================================*/
+     function getUserInfoValue(key) {
+    	 key = key + '=';
+         var cookieData = document.cookie;
+         var start = cookieData.indexOf(key);
+         var cValue = '';
+         if(start != -1){
+              start += key.length;
+              var end = cookieData.indexOf(';', start);
+              if(end == -1)end = cookieData.length;
+              cValue = cookieData.substring(start, end);
+         }
+         return decodeURI(cValue);
+     }
+     
+     function getUserPermInfoValue() {
+    	 var uid  = getUserInfoValue("unifUid");
+    	 var mSeq = parent.windowContainer1.windows[parent.windowContainer1.getSelectedIndex()].windowId.split("|")[0];
+    
+    	 WebSquare.ModelUtil.setInstanceValue( "reqPerm/menuSeq" , mSeq );
+         WebSquare.ModelUtil.setInstanceValue( "reqPerm/unifUid" , uid  );
+         execSubmission("getCommonDataSubm", "reqPerm", "resPerm","/perm/selectUserPermInfoValue.do");
+         
+	     return WebSquare.ModelUtil.getInstanceValue("resPerm/object/permInfo/permTypeCd");
+     }
+     
+     /*===============================================================
+      ** 기능 : 두 date를 비교
+      ** 인수 : sDate : 시작일, eDate : 종료일
+      ** 결과 : 시작일이 종료일 보다 크다면 false를  return
+      **===============================================================*/
+     function compareDate(sDate, eDate) {
+         var oneDay = (1000*60*60*24);
+         var d = (sDate - eDate)/oneDay;
+         if(d > 0) return false;
+         else return true;
+     }
+     
+     /*===============================================================
+      ** 기능 : 모바일 접속 여부
+      ** 인수 : 
+      ** 결과 : 모바일접속일 경우 true를 아닐경우 false를 반환
+      **===============================================================*/
+     function isMobile() {
+	     if (navigator.userAgent.match(/iPhone|iPad|iPod|Android|Windows CE|BlackBerry|Symbian|Windows Phone|webOS|Opera Mini|Opera Mobi|POLARIS|IEMobile|lgtelecom|nokia|SonyEricsson/i) != null
+ 			|| navigator.userAgent.match(/LG|SAMSUNG|Samsung/) != null)
+ 			{
+ 			return true;
+ 			}
+	     return false;
+    	 //모바일 테스트를 위해 무조건 true를 리턴
+    	 //return true;
+     }
+     
+     /*===============================================================
+      ** 기능 : inputcalendar에 값을 설정
+      ** 인수 : 
+      ** 결과 : 
+      **===============================================================*/
+     function setInputCalendarValue(obj, dateStr) {
+    	 eval(obj).setValue(dateStr);
+ 		 document.getElementById(eval(obj).id  + "_calendar").style.display = "none";
+     }
+     
+     
+     function cmUserSearch(textObj, nameObj) {
+    		gmSearchTypeFlag = "form";
+    		gmTextObjID = textObj.getID();
+    		gmNameObjID = nameObj.getID();
+    		
+    		nameObj.setValue("");
+    		var value = textObj.getValue();
+    		textObj.setValue("");
+    		
+    		WebSquare.ModelUtil.removeChildNodes( "responseGmSearchUserInfo" );
+    		if(event.type != 'click') {
+    			if(value.length < 1) {
+    				nameObj.setValue("");
+    				return;
+    			} else if(value.length < 2) {
+    				showMsg("C_I054", "사번/성명을 2자 이상");
+    				return;
+    			}
+    		}
+    		getCmUserInfo(event.type, value, arguments[2], arguments[3], arguments[4]);
+    	}
+     
+     function cmUserSearchMultiBrowser(textObj, nameObj, e) {
+   		gmSearchTypeFlag = "form";
+   		gmTextObjID = textObj.getID();
+   		gmNameObjID = nameObj.getID();
+   		
+   		
+   		nameObj.setValue("");
+   		var value = textObj.getValue();
+   		
+   		textObj.setValue("");
+   		
+   		WebSquare.ModelUtil.removeChildNodes( "responseGmSearchUserInfo" );
+   		if(e.type != 'click') {
+   			if(value.length < 1) {
+   				nameObj.setValue("");
+   				return;
+   			} else if(value.length < 2) {
+   				showMsg("C_I054", "사번/성명을 2자 이상");
+   				return;
+   			}
+   		}
+   		
+   		getCmUserInfo(e.type, value, arguments[3], arguments[4], arguments[5]);
+   	}   
+
+     /*============================================================================
+     ** 기능  : 일반행정 사번팝업 && 그리드에 입력
+     ** 인수  : submissionId, object
+     ** 리턴  : 결과배열, 노드생성
+         "responseGmSearchUserInfo/eno"        사번            
+         "responseGmSearchUserInfo/stafNm"     교직원성명      
+         "responseGmSearchUserInfo/iidno"      주민등록번호      
+         "responseGmSearchUserInfo/birth"      생년월일        
+         "responseGmSearchUserInfo/sexCd"      성별코드      
+         "responseGmSearchUserInfo/sexCdNm"    성별코드명   
+         "responseGmSearchUserInfo/clsfCd"     직급코드       
+         "responseGmSearchUserInfo/clsfNm"     직급명        
+         "responseGmSearchUserInfo/deptCd"     부서코드       
+         "responseGmSearchUserInfo/deptNm"     부서코드명      
+         "responseGmSearchUserInfo/hffcStatCd" 재직상태코드
+         "responseGmSeazrchUserInfo/hffcStatDt" 재직상태일자
+         "responseGmSearchUserInfo/hffcStatNm" 재직상태명
+         "responseGmSearchUserInfo/nltyCd" 국적코드
+         "responseGmSearchUserInfo/nltyCdNm" 국적코드명 
+         "responseGmSearchUserInfo/salcCd" 호봉코드
+         "responseGmSearchUserInfo/salcNm" 호봉코드명
+         "responseGmSearchUserInfo/payFormCd" 급여형태코드
+         "responseGmSearchUserInfo/payFormCdNm" 급여형태코드명
+         "responseGmSearchUserInfo/rtirDt" 퇴직일자
+         "responseGmSearchUserInfo/jobcCd" 직종코드
+         "responseGmSearchUserInfo/jobcCdNm" 직종코드명
+         "responseGmSearchUserInfo/payBankCd" 급여은행코드
+         "responseGmSearchUserInfo/payBankCdNm" 급여은행코드명
+         "responseGmSearchUserInfo/payAcno" 급여계좌번호
+         "responseGmSearchUserInfo/payDepoNm" 급여예금주명
+     ============================================================================*/
+     function cmUserSearchGrid(grid , row , col, initCols) {
+     	gmSearchTypeFlag = "grid";
+     	gmSearchGridRow = row;
+     	gmSearchGridCol = col;
+     	gmSearchGridObjID = grid.getID();
+
+     	grid.setCellData( row , col+2 , "" );
+     	var value = grid.getCellData(row, col);
+     	grid.setCellData( row , col , "" );
+     	
+     	WebSquare.ModelUtil.removeChildNodes( "responseGmSearchUserInfo" );
+     	
+     	if(initCols != undefined) {
+     		for(var index in initCols) {
+     			if(initCols[index] != "") {
+     				grid.setCellData( row , initCols[index] , "" );	
+     			}
+     		}
+     	}
+
+     	if(event.type != "click"){
+     		if(value.length < 1) {
+     			return;
+     		} else if(value.length < 2) {
+     			showMsg("C_I054", "사번/성명을 2자 이상");
+     			return;
+     		}
+     	}
+     	
+     	getCmUserInfo(event.type, value, arguments[4], arguments[5], arguments[6]);
+     }
+     
+    	function getCmUserInfo(type, value) {
+    		var arrResult = new Array();
+    		var clsfLCdValue = arguments[2];
+    		var jobcCdValue = arguments[3];
+    		var orgCd = arguments[4];
+    		var encodeValue = "";
+    		var encodeJobcCdValue = "";
+    		var encodeClsfLCdValue = "";
+    		var encodeOrgCd = "";
+    		
+    		if(value != "") {
+    			encodeValue = WebSquare.text.BASE64URLEncoder(value);
+    		}
+    		
+    		if(orgCd != undefined) {
+    			if(orgCd != "") {
+    				encodeOrgCd = WebSquare.text.BASE64URLEncoder(orgCd);
+    			} 
+    			setValue("requestGmSearchUser/orgCd", orgCd);
+    		}
+    		
+    		if(clsfLCdValue != undefined) {
+    			if(clsfLCdValue != "") {
+    				encodeClsfLCdValue = WebSquare.text.BASE64URLEncoder(clsfLCdValue);
+    			} 
+    			setValue("requestGmSearchUser/selectClsfLCd", clsfLCdValue);	
+    		}
+
+    		if(jobcCdValue != undefined) {
+    			if(jobcCdValue != "") {
+    				encodeJobcCdValue = WebSquare.text.BASE64URLEncoder(jobcCdValue);
+    			} 
+    			setValue("requestGmSearchUser/selectJobcCd", jobcCdValue);	
+    		}
+    		
+    	    setValue("requestGmSearchUser/eno", value);
+    	    
+    		if(type == "click") {
+    			openPopup( "setGmUserPopupValue", "/views/cm/PG_CM_0051.xml", {width: 800, height:550}, {eno:encodeValue, jobcCd:encodeJobcCdValue, clsfLCd:encodeClsfLCdValue, orgCd:encodeOrgCd});
+    			return;
+    		}
+    		
+    	    execSubmission("getCommonDataSubm", "requestGmSearchUser", "responseGmSearchUser", "/account/listViewIsBasForHj.do");
+    	    
+    	    var dataArr = WebSquare.ModelUtil.findInstanceNodes("responseGmSearchUser/object/userList/object");
+    	    var rowCount = dataArr.length;
+    	    
+    	    if(rowCount == 1) {
+    	    	arrResult.push(getValue("responseGmSearchUser/object/userList/object/eno"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/stafNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/iidno"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/birth"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/sexDvcd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/sexDvcdNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/clsfCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/clsfNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/deptCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/deptNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/hffcStatCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/hffcStatDt"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/hffcStatNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/nltyCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/nltyCdNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/salcCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/salcNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/payFormCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/payFormCdNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/rtirDt"));      
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/jobcCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/jobcCdNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/payBankCd"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/payBankCdNm"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/payAcno"));
+    	        arrResult.push(getValue("responseGmSearchUser/object/userList/object/payDepoNm"));
+    	        
+    	        WebSquare.ModelUtil.removeChildNodes( "responseGmSearchUser" );
+    	        
+    	        setGmUserPopupValue(arrResult);
+    	    } else if(rowCount > 1) {
+    	    	WebSquare.ModelUtil.removeChildNodes( "responseGmSearchUser" );
+    	    	openPopup( "setGmUserPopupValue", "/views/cm/PG_CM_0051.xml", {width: 800, height:550}, {eno:encodeValue, jobcCd:encodeJobcCdValue, clsfLCd:encodeClsfLCdValue, orgCd:encodeOrgCd});
+    	    } else if(rowCount == 0) {
+    	    	showMsg("C_I041", "사번/성명으로 검색한 결과");
+    	    }
+    	} 
+    	
+        /*============================================================================
+         ** 기능  : 웹브라우저가 ie8이하 여부
+         ** 인수 : 
+         ** 결과  : true, false
+         ============================================================================*/
+        function isIe8() {
+        	if($.browser.msie && parseInt($.browser.version) <= 8) {
+        		return true;
+        	} else 
+        		return false;
+        }
+        
+        /**
+         * 권한조직콤보 쿼리 호출
+         */
+        function getAuthOrgCodeSelectbox(orgClsCd, useYn) {
+            //폐기여부 Y인 경우 폐기된 조직은 나타나지 않음    N인 경우 폐기된 조직도 나옴
+            if(useYn == undefined || useYn == "") 
+                useYn = "Y";
+            setValue("requestAuthOrgSelectBox/orgSelectBoxObject/orgClsCd", orgClsCd);
+            setValue("requestAuthOrgSelectBox/orgSelectBoxObject/useYn", useYn);
+            setValue("requestAuthOrgSelectBox/orgSelectBoxObject/dpmjDvcd", "99");
+            setValue("requestAuthOrgSelectBox/orgSelectBoxObject/authYn", "Y");//권한콤보 구분자
+            setValue("requestAuthOrgSelectBox/orgSelectBoxObject/unifUid", getUserInfoValue("unifUid"));//아이디
+            setValue("requestAuthOrgSelectBox/orgSelectBoxObject/orgCd", getUserInfoValue("orgCd"));//부서
+            
+            WebSquare.ModelUtil.executeSubmission("smAuthOrgCodeSelectbox");
+        }
+        
+        
+        /**
+         * 권한조직콤보 쿼리 설정
+         */
+        function setAuthOrgCodeSelectBox(selectId, level, upOrgCd) {
+            var nodes = WebSquare.ModelUtil.findInstanceNodes("responseAuthOrgSelectBox/object/orgCdBasList/object");
+            eval(selectId).removeAll(true);
+            if(level != "1" && upOrgCd == "") return;
+            for(var i=1; i<=nodes.length; i++) {
+                if(level == "1") {
+                    if(getValue("responseAuthOrgSelectBox/object/orgCdBasList/object[" + i + "]/lvl") == level) {
+                        eval(selectId).addItem(getValue("responseAuthOrgSelectBox/object/orgCdBasList/object[" + i + "]/orgCd"), getValue("responseAuthOrgSelectBox/object/orgCdBasList/object[" + i + "]/deptNm"));
+                    }
+                } else {
+                    if(getValue("responseAuthOrgSelectBox/object/orgCdBasList/object[" + i + "]/lvl") == level && getValue("responseAuthOrgSelectBox/object/orgCdBasList/object[" + i + "]/upOrgCd") == upOrgCd) {
+                        eval(selectId).addItem(getValue("responseAuthOrgSelectBox/object/orgCdBasList/object[" + i + "]/orgCd"), getValue("responseAuthOrgSelectBox/object/orgCdBasList/object[" + i + "]/deptNm"));
+                    }
+                }
+            }
+            eval(selectId).setSelectedIndex(0);
+        }
+
+        /**
+         * 권한조직콤보(single) 조회
+         */
+        function getAuthOrgCodeSingleSelectbox(orgClsCd, useYn) {
+            if(orgClsCd == undefined || orgClsCd == "") { showMsg("C_I041", "조직분류코드"); return;}
+            //폐기여부 Y인 경우 폐기된 조직은 나타나지 않음    N인 경우 폐기된 조직도 나옴
+            if(useYn == undefined || useYn == "") 
+                useYn = "Y";
+            setValue("requestAuthOrgSingleSelectBox/orgSingleSelectBoxObject/orgClsCd", orgClsCd);
+            setValue("requestAuthOrgSingleSelectBox/orgSingleSelectBoxObject/useYn", useYn);
+            setValue("requestAuthOrgSingleSelectBox/orgSingleSelectBoxObject/authYn", "Y");//권한콤보 구분자
+            setValue("requestAuthOrgSingleSelectBox/orgSingleSelectBoxObject/unifUid", getUserInfoValue("unifUid"));//아이디
+            setValue("requestAuthOrgSingleSelectBox/orgSingleSelectBoxObject/orgCd", getUserInfoValue("orgCd"));//부서
+            WebSquare.ModelUtil.executeSubmission("smAuthOrgCodeSingleSelectbox");
+        }
+        
+        /**
+         * 권한조직콤보(single) 설정
+         */
+        function setAuthOrgCodeSingleSelectBox(selectId) {
+            eval(selectId).removeAll(true);
+            eval(selectId).setNodeSet( "responseAuthOrgSingleSelectBox/object/orgCdBasList/object" , "deptNm" , "orgCd" );
+            eval(selectId).setSelectedIndex(0);
+        }
+        
+        /**
+         * 권한조직콤보(single) 노드복사
+         * @param descNode
+         */
+        function copyAuthSingleAuthSelectboxOrgCode(descNode) {
+            WebSquare.ModelUtil.copyNode("responseAuthOrgSingleSelectBox/object/orgCdBasList" , descNode);
+        }
+        
+        function requestAddr(obj1, obj2){
+            var headID = document.getElementsByTagName("head")[0];
+            var newScript = document.createElement('script');
+            newScript.type = 'text/javascript';
+
+            /* 2016.08.18 수원과학대 SSO 적용으로 인한 수정 */
+            //if(getUserInfoValue( "sculDvcd" ) == "1"){
+                newScript.src = "https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js?autoload=false";
+            //} else {
+            //    newScript.src = "http://dmaps.daum.net/map_js_init/postcode.v2.js?autoload=false";
+            //}       
+            headID.appendChild(newScript);
+
+            daum.postcode.load(function(){
+                new daum.Postcode({
+                   oncomplete: function(data) { 
+                   var fullAddr = '';
+                   var extraAddr = '';
+   
+                   if (data.userSelectedType === 'R') {
+                       fullAddr = data.roadAddress;
+                   } else {
+                       fullAddr = data.roadAddress;
+                       //fullAddr = data.jibunAddress;
+                   }
+   
+                   if(data.userSelectedType === 'R'){
+                       if(data.bname !== ''){
+                           extraAddr += data.bname;
+                       }
+                       if(data.buildingName !== ''){
+                           extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                       }
+                       fullAddr += (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
+                   }
+                   
+                   obj1.setValue(data.zonecode);
+                   obj2.setValue(fullAddr);
+                   }
+                }).open();
+            });
+        }
+        
+        function cmInitKeyCodeMultiBrowser(e) {
+        	//TAB, SHIFT 체크
+        	if(e.keyCode == 9 || e.keyCode == 16) {
+        		return false;
+        	}
+        	
+        	return true;
+        }
+        
+        
+      //-----------------------------------------------------
+        // Base64 인코딩,디코딩 함수
+        //-----------------------------------------------------
+        var Base64 = {
+          
+            // private property
+            _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+          
+            // public method for encoding
+            encode : function (input) {
+                var output = "";
+                var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+                var i = 0;
+          
+                input = Base64._utf8_encode(input);
+          
+                while (i < input.length) {
+          
+                    chr1 = input.charCodeAt(i++);
+                    chr2 = input.charCodeAt(i++);
+                    chr3 = input.charCodeAt(i++);
+          
+                    enc1 = chr1 >> 2;
+                    enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                    enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                    enc4 = chr3 & 63;
+          
+                    if (isNaN(chr2)) {
+                        enc3 = enc4 = 64;
+                    } else if (isNaN(chr3)) {
+                        enc4 = 64;
+                    }
+          
+                    output = output +
+                    this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+                    this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+          
+                }
+          
+                return output;
+            },
+          
+            // public method for decoding
+            decode : function (input) {
+                var output = "";
+                var chr1, chr2, chr3;
+                var enc1, enc2, enc3, enc4;
+                var i = 0;
+          
+                input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+          
+                while (i < input.length) {
+          
+                    enc1 = this._keyStr.indexOf(input.charAt(i++));
+                    enc2 = this._keyStr.indexOf(input.charAt(i++));
+                    enc3 = this._keyStr.indexOf(input.charAt(i++));
+                    enc4 = this._keyStr.indexOf(input.charAt(i++));
+          
+                    chr1 = (enc1 << 2) | (enc2 >> 4);
+                    chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                    chr3 = ((enc3 & 3) << 6) | enc4;
+          
+                    output = output + String.fromCharCode(chr1);
+          
+                    if (enc3 != 64) {
+                        output = output + String.fromCharCode(chr2);
+                    }
+                    if (enc4 != 64) {
+                        output = output + String.fromCharCode(chr3);
+                    }
+          
+                }
+          
+                output = Base64._utf8_decode(output);
+          
+                return output;
+          
+            },
+          
+            // private method for UTF-8 encoding
+            _utf8_encode : function (string) {
+                string = string.replace(/\r\n/g,"\n");
+                var utftext = "";
+          
+                for (var n = 0; n < string.length; n++) {
+          
+                    var c = string.charCodeAt(n);
+          
+                    if (c < 128) {
+                        utftext += String.fromCharCode(c);
+                    }
+                    else if((c > 127) && (c < 2048)) {
+                        utftext += String.fromCharCode((c >> 6) | 192);
+                        utftext += String.fromCharCode((c & 63) | 128);
+                    }
+                    else {
+                        utftext += String.fromCharCode((c >> 12) | 224);
+                        utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                        utftext += String.fromCharCode((c & 63) | 128);
+                    }
+          
+                }
+          
+                return utftext;
+            },
+          
+            // private method for UTF-8 decoding
+            _utf8_decode : function (utftext) {
+                var string = "";
+                var i = 0;
+                var c = c1 = c2 = 0;
+          
+                while ( i < utftext.length ) {
+          
+                    c = utftext.charCodeAt(i);
+          
+                    if (c < 128) {
+                        string += String.fromCharCode(c);
+                        i++;
+                    }
+                    else if((c > 191) && (c < 224)) {
+                        c2 = utftext.charCodeAt(i+1);
+                        string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                        i += 2;
+                    }
+                    else {
+                        c2 = utftext.charCodeAt(i+1);
+                        c3 = utftext.charCodeAt(i+2);
+                        string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                        i += 3;
+                    }
+          
+                }
+          
+                return string;
+            }
+          
+        }
+        
+        
+        /*
+         *  배열의 중복 값 제거
+         * 사용법 및 예시
+         *     arr1 = [3,3,4,4,5,6,6,7,7,7,8,9,9,9,2,1,1,0]; //무작위값 할당
+         *     alert(arr1.unique()); //결과: 0,1,2,3,4,5,6,7,8,9
+         
+        
+        Array.prototype.unique = function(){
+            
+            var a = {};
+            for (var i = 0; i < this.length; i++) {
+               //값을 인덱스로
+                if (typeof a[this[i]] == 'undefined') {
+                    a[this[i]] = 1;
+                }
+            }
+    
+            this.length = 0;
+    
+            for (var i in a) {
+    
+                this[this.length] = i;
+    
+            }
+    
+            return this;
+    
+        };
+        */
+        
+        /*
+         *  배열의 중복 값 제거
+         * 사용법 및 예시
+         *     arr1 = [3,3,4,4,5,6,6,7,7,7,8,9,9,9,2,1,1,0]; //무작위값 할당
+         *     alert(getUniqueArray(arr1)); //결과: 3,4,6,7,8,9,0,2,1,0
+         */
+        function getUniqueArray(arr) {
+
+            var a = [];
+            for (var i = 0; i < arr.length; i++) {
+                if (a.length == 0) {
+                    a.push(arr[i]);
+                } else {
+                    var chk = true;
+                    for (var j = 0; j < a.length; j++) {
+                        if (a[j] == arr[i]) {
+                            flg = false;
+                            break;
+                        }
+                    }
+
+                    if (chk) {
+                        a.push(arr[i]);
+                    }
+                }
+            }
+            return a;
+        }
+
+
